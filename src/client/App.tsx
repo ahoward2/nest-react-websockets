@@ -27,16 +27,25 @@ function App() {
     };
   }, []);
 
-  const sendPing = () => {
-    socket.emit('events', 'Hello world');
+  const sendPing = (e) => {
+    console.log(e);
+    socket.emit('events', e.target[0].value);
   };
 
   return (
     <div>
       <p>Connected: {'' + isConnected}</p>
-      <button onClick={sendPing}>Send ping</button>
-      {messages?.map((message) => {
-        return <p>{message}</p>;
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          sendPing(e);
+        }}
+      >
+        <textarea id="minput"></textarea>
+        <input type="submit" value="submit"></input>
+      </form>
+      {messages?.map((message, index) => {
+        return <p key={index}>{message}</p>;
       })}
     </div>
   );

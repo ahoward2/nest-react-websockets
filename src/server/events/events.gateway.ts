@@ -26,6 +26,4 @@ export class EventsGateway {
     this.server.emit('events', payload); // broadcast messages
     return payload;
   }
-
-  async sendMessage() {}
 }

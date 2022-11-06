@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": false,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "removeComments": true,
+    "noLib": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "useUnknownInCatchVariables": false,
+    "target": "es6",
+    "sourceMap": true,
+    "allowJs": true,
+    "outDir": "dist/server",
+    "strict": true,
+    "lib": ["es7"]
+  },
+  "include": ["src/server", "src/shared"],
+  "exclude": ["src/client", "node_modules"]
+}

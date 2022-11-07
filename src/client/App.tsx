@@ -1,19 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
+import { User, Message } from '../shared/interfaces/data.interface';
 
 const socket = io();
 
 function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
-  const [messages, setMessages] = useState<
-    { userId: string; userName: string; message: string }[]
-  >([]);
-  const [user, setUser] = useState<{ userId: string; userName: string }>({
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [user, setUser] = useState<User>({
     userId: Date.now().toLocaleString().concat('Austin'),
     userName: 'Austin',
   });
 
   useEffect(() => {
+    const currentUser = JSON.parse(sessionStorage.getItem('user') ?? '{}');
+    if (!currentUser.userId) {
+      const newUser = {
+        userId: Date.now().toLocaleString().concat('Austin'),
+        userName: 'Austin',
+      };
+      sessionStorage.setItem('user', JSON.stringify(newUser));
+      setUser(newUser);
+    } else {
+      setUser(currentUser);
+    }
+
     socket.on('connect', () => {
       setIsConnected(true);
     });
@@ -36,8 +47,10 @@ function App() {
   const sendPing = (e) => {
     console.log(e);
     socket.emit('events', {
-      userId: user.userId,
-      userName: user.userName,
+      user: {
+        userId: user.userId,
+        userName: user.userName,
+      },
       message: e.target[0].value,
     });
   };
@@ -57,17 +70,22 @@ function App() {
           <h1 className="text-purple-300 font-black text-3xl mx-auto">
             Nest React Realtime Chat
           </h1>
-          <p className="text-white">Connected: {'' + isConnected}</p>
+          <div className="flex justify-between">
+            <p className="text-white">Connected: {'' + isConnected}</p>
+            <p className="text-white">
+              Current User: {'' + user.userName ?? ''}
+            </p>
+          </div>
         </div>
         <div className="w-ful flex flex-col-reverse h-4/6 overflow-y-scroll">
           {messages?.map((message, index) => {
             return (
               <div
                 key={index}
-                className={determineMessageStyle(message.userId)}
+                className={determineMessageStyle(message.user.userId)}
               >
                 <span className="text-gray-400 font-thin">
-                  {message.userName}
+                  {message.user.userName}
                 </span>
                 <p className="text-white">{message.message}</p>
               </div>

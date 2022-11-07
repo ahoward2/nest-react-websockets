@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
+import { Message } from '../../shared/interfaces/data.interface';
 
 @WebSocketGateway({
   cors: {
@@ -20,9 +21,9 @@ export class EventsGateway {
   @SubscribeMessage('events')
   async handleEvent(
     @MessageBody()
-    payload: { userId: string; userName: string; message: string },
+    payload: Message,
     @ConnectedSocket() client: Socket, // can send messages directly to specific client
-  ): Promise<{ userId: string; userName: string; message: string }> {
+  ): Promise<Message> {
     this.logger.log(payload);
     this.server.emit('events', payload); // broadcast messages
     return payload;

@@ -7,20 +7,17 @@ const socket = io();
 function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [user, setUser] = useState<User>({
-    userId: Date.now().toLocaleString().concat('Austin'),
-    userName: 'Austin',
-  });
+  const [user, setUser] = useState<User>();
 
   useEffect(() => {
     const currentUser = JSON.parse(sessionStorage.getItem('user') ?? '{}');
     if (!currentUser.userId) {
-      const newUser = {
-        userId: Date.now().toLocaleString().concat('Austin'),
-        userName: 'Austin',
-      };
-      sessionStorage.setItem('user', JSON.stringify(newUser));
-      setUser(newUser);
+      // const newUser = {
+      //   userId: Date.now().toLocaleString().concat('Austin'),
+      //   userName: 'Austin',
+      // };
+      // sessionStorage.setItem('user', JSON.stringify(newUser));
+      // setUser(newUser);
     } else {
       setUser(currentUser);
     }
@@ -44,19 +41,30 @@ function App() {
     };
   }, []);
 
+  const login = (e) => {
+    const formValue = e.target[0].value;
+    const newUser = {
+      userId: Date.now().toLocaleString().concat(formValue),
+      userName: formValue,
+    };
+    sessionStorage.setItem('user', JSON.stringify(newUser));
+    setUser(newUser);
+  };
+
   const sendPing = (e) => {
-    console.log(e);
-    socket.emit('events', {
-      user: {
-        userId: user.userId,
-        userName: user.userName,
-      },
-      message: e.target[0].value,
-    });
+    if (user) {
+      socket.emit('events', {
+        user: {
+          userId: user.userId,
+          userName: user.userName,
+        },
+        message: e.target[0].value,
+      });
+    }
   };
 
   const determineMessageStyle = (messageUserId: string) => {
-    if (messageUserId === user.userId) {
+    if (user && messageUserId === user.userId) {
       return 'bg-purple-600 p-4 ml-24 mb-4 rounded';
     } else {
       return 'bg-gray-600 p-4 mr-24 mb-4 rounded';
@@ -65,46 +73,61 @@ function App() {
 
   return (
     <div className="flex mx-auto w-screen h-screen justify-center bg-gray-900">
-      <div className="h-full w-4/12">
-        <div className="h-1/6">
-          <h1 className="text-purple-300 font-black text-3xl mx-auto">
-            Nest React Realtime Chat
-          </h1>
-          <div className="flex justify-between">
-            <p className="text-white">Connected: {'' + isConnected}</p>
-            <p className="text-white">
-              Current User: {'' + user.userName ?? ''}
-            </p>
+      {user && user.userId ? (
+        <div className="h-full w-4/12">
+          <div className="h-1/6">
+            <h1 className="text-purple-300 font-black text-3xl mx-auto">
+              Nest React Realtime Chat
+            </h1>
+            <div className="flex justify-between">
+              <p className="text-white">Connected: {'' + isConnected}</p>
+              <p className="text-white">
+                Current User: {'' + user.userName ?? ''}
+              </p>
+            </div>
+          </div>
+          <div className="w-ful flex flex-col-reverse h-4/6 overflow-y-scroll">
+            {messages?.map((message, index) => {
+              return (
+                <div
+                  key={index}
+                  className={determineMessageStyle(message.user.userId)}
+                >
+                  <span className="text-gray-400 font-thin">
+                    {message.user.userName}
+                  </span>
+                  <p className="text-white">{message.message}</p>
+                </div>
+              );
+            })}
+          </div>
+          <div className="h-1/6">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                sendPing(e);
+              }}
+              className="w-full flex flex-col"
+            >
+              <textarea id="minput"></textarea>
+              <input type="submit" value="send" className="text-white"></input>
+            </form>
           </div>
         </div>
-        <div className="w-ful flex flex-col-reverse h-4/6 overflow-y-scroll">
-          {messages?.map((message, index) => {
-            return (
-              <div
-                key={index}
-                className={determineMessageStyle(message.user.userId)}
-              >
-                <span className="text-gray-400 font-thin">
-                  {message.user.userName}
-                </span>
-                <p className="text-white">{message.message}</p>
-              </div>
-            );
-          })}
-        </div>
-        <div className="h-1/6">
+      ) : (
+        <div className="my-auto">
+          <p className="text-white">Please sign in as a user</p>
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              sendPing(e);
+              login(e);
             }}
-            className="w-full flex flex-col"
           >
-            <textarea id="minput"></textarea>
-            <input type="submit" value="send" className="text-white"></input>
+            <input type="text" id="login"></input>
+            <input type="submit" value="login" className="text-white"></input>
           </form>
         </div>
-      </div>
+      )}
     </div>
   );
 }

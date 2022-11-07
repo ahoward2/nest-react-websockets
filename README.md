@@ -20,3 +20,8 @@ $ yarn build
 # start server in production
 $ yarn start:prodserver
 ```
+
+## Sneak Peek
+
+![](./public/static/screenshot-one.png)
+![](./public/static/screenshot-two.png)

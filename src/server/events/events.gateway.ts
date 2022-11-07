@@ -19,9 +19,10 @@ export class EventsGateway {
 
   @SubscribeMessage('events')
   async handleEvent(
-    @MessageBody() payload: string,
+    @MessageBody()
+    payload: { userId: string; userName: string; message: string },
     @ConnectedSocket() client: Socket, // can send messages directly to specific client
-  ): Promise<string> {
+  ): Promise<{ userId: string; userName: string; message: string }> {
     this.logger.log(payload);
     this.server.emit('events', payload); // broadcast messages
     return payload;

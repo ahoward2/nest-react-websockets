@@ -7,10 +7,6 @@ async function bootstrap() {
   await app.listen(3000);
 
   // Gracefully shutdown the server.
-  process.on('SIGTERM', () => {
-    console.info('SIGTERM signal received.');
-    console.log('Closing server.');
-    app.close();
-  });
+  app.enableShutdownHooks();
 }
 bootstrap();

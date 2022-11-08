@@ -4,7 +4,7 @@ const { ESBuildMinifyPlugin } = require('esbuild-loader');
 const { ProvidePlugin } = require('webpack');
 
 module.exports = {
-  entry: path.resolve(__dirname, './src/client/index.js'),
+  entry: path.resolve(__dirname, './src/client/index.tsx'),
   mode: 'development',
   devServer: {
     static: {

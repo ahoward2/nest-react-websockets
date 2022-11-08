@@ -41,9 +41,6 @@ module.exports = {
       fuchsia: colors.fuchsia,
       transparent: colors.transparent,
     },
-    // fontFamily: {
-    //   serif: ["Merriweather", "serif"],
-    // },
     fontSize: {
       xs: '.75rem',
       sm: '.875rem',
@@ -74,5 +71,5 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [require('@tailwindcss/line-clamp'), require('@tailwindcss/forms')],
+  plugins: [require('@tailwindcss/forms')],
 };

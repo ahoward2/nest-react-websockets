@@ -5,5 +5,6 @@ export interface User {
 
 export interface Message {
   user: User;
+  dateTime: string;
   message: string;
 }

@@ -23,5 +23,5 @@ $ yarn start:prodserver
 
 ## Sneak Peek
 
-![](./public/static/screenshot-one.png)
-![](./public/static/screenshot-two.png)
+![](./public/static/login.png)
+![](./public/static/chat.png)

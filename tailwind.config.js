@@ -34,6 +34,7 @@ module.exports = {
       slate: colors.slate,
       zinc: colors.zinc,
       stone: colors.stone,
+      violet: colors.violet,
       lime: colors.lime,
       indigo: colors.indigo,
       yellow: colors.yellow,
@@ -58,9 +59,6 @@ module.exports = {
       '7xl': '5rem',
     },
     extend: {
-      backgroundImage: {
-        'hero-pattern': "url('/wave.svg')",
-      },
       spacing: {
         127: '31rem',
         128: '32rem',

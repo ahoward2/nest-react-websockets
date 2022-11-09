@@ -7,7 +7,12 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { Message } from '../../shared/interfaces/chat.interface';
+import {
+  ClientToServerEvents,
+  Message,
+} from '../../shared/interfaces/chat.interface';
+import { Server } from 'socket.io';
+import { ServerToClientEvents } from '../../shared/interfaces/chat.interface';
 
 @WebSocketGateway({
   cors: {
@@ -15,7 +20,10 @@ import { Message } from '../../shared/interfaces/chat.interface';
   },
 })
 export class ChatGateway {
-  @WebSocketServer() server;
+  @WebSocketServer() server: Server = new Server<
+    ServerToClientEvents,
+    ClientToServerEvents
+  >();
   private logger = new Logger('ChatGateway');
 
   @SubscribeMessage('chat')

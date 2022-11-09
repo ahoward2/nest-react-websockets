@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { io } from 'socket.io-client';
-import { User, Message } from '../shared/interfaces/chat.interface';
+import { io, Socket } from 'socket.io-client';
+import {
+  User,
+  Message,
+  ServerToClientEvents,
+  ClientToServerEvents,
+} from '../shared/interfaces/chat.interface';
 import { Header } from './components/header';
 import { LoginForm } from './components/login.form';
 import { MessageForm } from './components/message.form';
@@ -8,7 +13,7 @@ import { Messages } from './components/messages';
 import { ChatLayout } from './layouts/chat.layout';
 import { LoginLayout } from './layouts/login.layout';
 
-const socket = io();
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
 
 function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);

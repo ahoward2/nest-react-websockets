@@ -8,3 +8,11 @@ export interface Message {
   timeSent: string;
   message: string;
 }
+
+export interface ServerToClientEvents {
+  chat: (e: Message) => void;
+}
+
+export interface ClientToServerEvents {
+  chat: (e: Message) => void;
+}

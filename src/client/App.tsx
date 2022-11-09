@@ -57,7 +57,7 @@ function App() {
           userId: user.userId,
           userName: user.userName,
         },
-        dateTime: new Date(Date.now()).toLocaleString('en-US'),
+        timeSent: new Date(Date.now()).toLocaleString('en-US'),
         message: e.target[0].value,
       });
     }

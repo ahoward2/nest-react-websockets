@@ -5,6 +5,6 @@ export interface User {
 
 export interface Message {
   user: User;
-  dateTime: string;
+  timeSent: string;
   message: string;
 }

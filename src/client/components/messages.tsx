@@ -28,7 +28,7 @@ export const Messages = ({
               {message.user.userName}
             </span>
             <span className="text-sm text-gray-400">{' ' + '•' + ' '}</span>
-            <span className="text-sm text-gray-400">{message.dateTime}</span>
+            <span className="text-sm text-gray-400">{message.timeSent}</span>
             <p className="text-white">{message.message}</p>
           </div>
         );

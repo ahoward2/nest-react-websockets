@@ -9,13 +9,11 @@ export const Header = ({
   isConnected: boolean;
 }) => {
   return (
-    <div className="h-1/6">
-      <h1 className="mx-auto text-5xl font-black text-violet-500">
-        Realtime Chat
-      </h1>
-      <div className="flex justify-between">
-        <p className="text-white">Connected: {'' + isConnected}</p>
-        <p className="text-white">Current User: {'' + user.userName ?? ''}</p>
+    <div className="flex h-1/6 items-center justify-between">
+      <h1 className="text-5xl font-black text-violet-500">Realtime Chat</h1>
+      <div className="flex h-8 items-center rounded-xl bg-slate-800 px-4">
+        <span className="mr-1 text-lg text-white">{user.userName ?? ''}</span>
+        <span className="ml-1">{isConnected ? '🟢' : '🔴'}</span>
       </div>
     </div>
   );

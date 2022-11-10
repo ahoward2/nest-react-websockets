@@ -5,7 +5,6 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
-import { Socket } from 'socket.io';
 import {
   ServerToClientEvents,
   ClientToServerEvents,

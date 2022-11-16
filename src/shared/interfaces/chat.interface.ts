@@ -1,6 +1,7 @@
 export interface User {
   userId: string;
   userName: string;
+  socketId?: string;
 }
 
 export interface Message {
@@ -15,4 +16,5 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   chat: (e: Message) => void;
+  set_client_data: (e: User) => void;
 }

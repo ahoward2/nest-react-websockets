@@ -54,6 +54,12 @@ module.exports = {
           tsconfigRaw: require('./tsconfig.client.json'),
         },
       },
+      {
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
     ],
   },
   optimization: {

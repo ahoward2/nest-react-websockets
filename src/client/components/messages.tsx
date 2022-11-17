@@ -17,7 +17,7 @@ export const Messages = ({
   messages: Message[];
 }) => {
   return (
-    <div className="w-ful flex h-4/6 flex-col-reverse overflow-y-scroll">
+    <div className="flex h-4/6 w-full flex-col-reverse overflow-y-scroll">
       {messages?.map((message, index) => {
         return (
           <div

@@ -10,6 +10,7 @@ import {
   ClientToServerEvents,
 } from '../../shared/interfaces/chat.interface';
 import { Header } from '../components/header';
+import { UserList } from '../components/list';
 import { MessageForm } from '../components/message.form';
 import { Messages } from '../components/messages';
 import { ChatLayout } from '../layouts/chat.layout';
@@ -31,10 +32,12 @@ function Chat() {
 
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [toggleUserList, setToggleUserList] = useState<boolean>(false);
 
   const { data: connectedUsers } = useQuery({
     queryKey: ['connected_users'],
     queryFn: async () => axios.get('/api/current-users'),
+    refetchInterval: 60000,
   });
 
   useEffect(() => {
@@ -84,8 +87,16 @@ function Chat() {
             user={user}
             isConnected={isConnected}
             users={connectedUsers?.data ?? []}
+            handleUsersClick={() =>
+              setToggleUserList((toggleUserList) => !toggleUserList)
+            }
+            title={toggleUserList ? 'Connected Users' : 'Chat'}
           ></Header>
-          <Messages user={user} messages={messages}></Messages>
+          {toggleUserList ? (
+            <UserList users={connectedUsers?.data ?? []}></UserList>
+          ) : (
+            <Messages user={user} messages={messages}></Messages>
+          )}
           <MessageForm sendMessage={sendMessage}></MessageForm>
         </ChatLayout>
       ) : (

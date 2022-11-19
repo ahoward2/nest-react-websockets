@@ -6,7 +6,6 @@ import {
   Message,
   ServerToClientEvents,
   ClientToServerEvents,
-  Room,
 } from '../../shared/interfaces/chat.interface';
 import { Header } from '../components/header';
 import { UserList } from '../components/list';
@@ -94,7 +93,7 @@ function Chat() {
             title={toggleUserList ? 'Connected Users' : 'Chat'}
           ></Header>
           {toggleUserList ? (
-            <UserList room={room ?? {}}></UserList>
+            <UserList room={room}></UserList>
           ) : (
             <Messages user={user} messages={messages}></Messages>
           )}

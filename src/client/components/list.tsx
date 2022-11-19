@@ -1,13 +1,16 @@
 import React from 'react';
-import { User } from '../../shared/interfaces/chat.interface';
+import { Room } from '../../shared/interfaces/chat.interface';
 
-export const UserList = ({ users }: { users: User[] }) => {
+export const UserList = ({ room }: { room: Room }) => {
   return (
     <div className="flex h-4/6 w-full flex-col-reverse overflow-y-scroll">
-      {users.map((user, index) => {
+      {room.users.map((user, index) => {
         return (
-          <div key={index} className="mb-4 rounded px-4 py-2">
+          <div key={index} className="mb-4 flex rounded px-4 py-2">
             <p className="text-white">{user.userName}</p>
+            {room.host.userId === user.userId && (
+              <span className="ml-2">{'👑'}</span>
+            )}
           </div>
         );
       })}

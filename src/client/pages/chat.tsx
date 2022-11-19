@@ -1,6 +1,4 @@
 import { MakeGenerics, useMatch, useNavigate } from '@tanstack/react-location';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
 import {
@@ -8,12 +6,14 @@ import {
   Message,
   ServerToClientEvents,
   ClientToServerEvents,
+  Room,
 } from '../../shared/interfaces/chat.interface';
 import { Header } from '../components/header';
 import { UserList } from '../components/list';
 import { MessageForm } from '../components/message.form';
 import { Messages } from '../components/messages';
 import { ChatLayout } from '../layouts/chat.layout';
+import { useRoomQuery } from '../lib/room';
 
 type ChatLocationGenerics = MakeGenerics<{
   LoaderData: {
@@ -35,12 +35,7 @@ function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [toggleUserList, setToggleUserList] = useState<boolean>(false);
 
-  const { data: connectedUsers } = useQuery({
-    queryKey: ['rooms', roomName],
-    queryFn: async () => axios.get(`/api/rooms/${roomName}`),
-    refetchInterval: 60000,
-    enabled: isConnected,
-  });
+  const { data: room } = useRoomQuery(roomName, isConnected);
 
   useEffect(() => {
     if (!user || !roomName) {
@@ -86,12 +81,12 @@ function Chat() {
   };
   return (
     <>
-      {user && user.userId && roomName ? (
+      {user && user.userId && roomName && room ? (
         <ChatLayout>
           <Header
             user={user}
             isConnected={isConnected}
-            users={connectedUsers?.data?.users ?? []}
+            users={room?.users ?? []}
             roomName={roomName}
             handleUsersClick={() =>
               setToggleUserList((toggleUserList) => !toggleUserList)
@@ -99,7 +94,7 @@ function Chat() {
             title={toggleUserList ? 'Connected Users' : 'Chat'}
           ></Header>
           {toggleUserList ? (
-            <UserList users={connectedUsers?.data?.users ?? []}></UserList>
+            <UserList room={room ?? {}}></UserList>
           ) : (
             <Messages user={user} messages={messages}></Messages>
           )}

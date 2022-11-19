@@ -18,12 +18,14 @@ function Login() {
   const navigate = useNavigate();
 
   const login = (e: React.FormEvent<HTMLFormElement>) => {
-    const formValue = e.target[0].value;
+    const userFormValue = e.target[0].value;
+    const roomFormValue = e.target[1].value;
     const newUser = {
-      userId: Date.now().toLocaleString().concat(formValue),
-      userName: formValue,
+      userId: Date.now().toLocaleString().concat(userFormValue),
+      userName: userFormValue,
     };
     sessionStorage.setItem('user', JSON.stringify(newUser));
+    sessionStorage.setItem('room', roomFormValue);
     navigate({ to: '/chat', replace: true });
   };
 

@@ -20,6 +20,12 @@ export const LoginForm = ({
           placeholder="Name"
           className="mx-2 h-12 rounded-md border border-slate-400 bg-gray-800 text-white placeholder-slate-400 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
         ></input>
+        <input
+          type="text"
+          id="room"
+          placeholder="Room"
+          className="mx-2 h-12 rounded-md border border-slate-400 bg-gray-800 text-white placeholder-slate-400 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
+        ></input>
         <button
           type="submit"
           className="mx-2 flex h-12 w-12 items-center justify-center rounded-full bg-violet-700 text-white"

@@ -5,7 +5,6 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  WsException,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import {
@@ -38,20 +37,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     payload: Message,
   ): Promise<Message> {
     this.logger.log(payload);
-    this.server.emit('chat', payload); // broadcast messages
+    this.server.to(payload.roomName).emit('chat', payload); // broadcast messages
     return payload;
   }
 
-  @SubscribeMessage('set_client_data')
+  @SubscribeMessage('join_room')
   async handleSetClientDataEvent(
     @MessageBody()
-    payload: User,
+    payload: {
+      roomName: string;
+      user: User;
+    },
   ) {
-    if (payload.socketId) {
-      this.userService.updateUserData(payload.socketId, {
-        userId: payload.userId,
-        userName: payload.userName,
-      });
+    if (payload.user.socketId) {
+      this.logger.log(
+        `${payload.user.socketId} is joining ${payload.roomName}`,
+      );
+      await this.userService.addRoom(payload.roomName);
+      await this.server.in(payload.user.socketId).socketsJoin(payload.roomName);
+      await this.userService.addUserToRoom(payload.roomName, payload.user);
     }
   }
 
@@ -60,7 +64,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(socket: Socket): Promise<void> {
-    this.userService.removeUser(socket.id);
+    await this.userService.removeUserFromAllRooms(socket.id);
     this.logger.log(`Socket disconnected: ${socket.id}`);
   }
 }

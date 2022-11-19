@@ -14,6 +14,7 @@ export const AppRouter = () => {
           path: '/',
           loader: async () => ({
             user: JSON.parse(sessionStorage.getItem('user') || ''),
+            roomName: sessionStorage.getItem('room'),
           }),
           element: async () => (
             <Suspense fallback={<></>}>
@@ -25,6 +26,7 @@ export const AppRouter = () => {
           path: 'chat',
           loader: async () => ({
             user: JSON.parse(sessionStorage.getItem('user') || ''),
+            roomName: sessionStorage.getItem('room'),
           }),
           element: async () => (
             <Suspense fallback={<></>}>

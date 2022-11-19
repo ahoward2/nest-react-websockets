@@ -18,6 +18,7 @@ import { ChatLayout } from '../layouts/chat.layout';
 type ChatLocationGenerics = MakeGenerics<{
   LoaderData: {
     user: Pick<User, 'userId' | 'userName'>;
+    roomName: string;
   };
 }>;
 
@@ -25,7 +26,7 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
 
 function Chat() {
   const {
-    data: { user },
+    data: { user, roomName },
   } = useMatch<ChatLocationGenerics>();
 
   const navigate = useNavigate();
@@ -35,19 +36,21 @@ function Chat() {
   const [toggleUserList, setToggleUserList] = useState<boolean>(false);
 
   const { data: connectedUsers } = useQuery({
-    queryKey: ['connected_users'],
-    queryFn: async () => axios.get('/api/current-users'),
+    queryKey: ['rooms', roomName],
+    queryFn: async () => axios.get(`/api/rooms/${roomName}`),
     refetchInterval: 60000,
     enabled: isConnected,
   });
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !roomName) {
       navigate({ to: '/', replace: true });
     } else {
       socket.on('connect', () => {
-        console.log(socket.id);
-        socket.emit('set_client_data', { socketId: socket.id, ...user });
+        socket.emit('join_room', {
+          roomName,
+          user: { socketId: socket.id, ...user },
+        });
         setIsConnected(true);
       });
 
@@ -68,7 +71,7 @@ function Chat() {
   }, []);
 
   const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
-    if (user && socket) {
+    if (user && socket && roomName) {
       socket.emit('chat', {
         user: {
           userId: user.userId,
@@ -77,24 +80,26 @@ function Chat() {
         },
         timeSent: new Date(Date.now()).toLocaleString('en-US'),
         message: e.target[0].value,
+        roomName: roomName,
       });
     }
   };
   return (
     <>
-      {user && user.userId ? (
+      {user && user.userId && roomName ? (
         <ChatLayout>
           <Header
             user={user}
             isConnected={isConnected}
-            users={connectedUsers?.data ?? []}
+            users={connectedUsers?.data?.users ?? []}
+            roomName={roomName}
             handleUsersClick={() =>
               setToggleUserList((toggleUserList) => !toggleUserList)
             }
             title={toggleUserList ? 'Connected Users' : 'Chat'}
           ></Header>
           {toggleUserList ? (
-            <UserList users={connectedUsers?.data ?? []}></UserList>
+            <UserList users={connectedUsers?.data?.users ?? []}></UserList>
           ) : (
             <Messages user={user} messages={messages}></Messages>
           )}

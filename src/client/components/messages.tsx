@@ -1,7 +1,10 @@
 import React from 'react';
 import { Message, User } from '../../shared/interfaces/chat.interface';
 
-const determineMessageStyle = (user: User, messageUserId: string) => {
+const determineMessageStyle = (
+  user: Pick<User, 'userId' | 'userName'>,
+  messageUserId: string,
+) => {
   if (user && messageUserId === user.userId) {
     return 'bg-violet-900 p-4 ml-24 mb-4 rounded';
   } else {
@@ -13,7 +16,7 @@ export const Messages = ({
   user,
   messages,
 }: {
-  user: User;
+  user: Pick<User, 'userId' | 'userName'>;
   messages: Message[];
 }) => {
   return (

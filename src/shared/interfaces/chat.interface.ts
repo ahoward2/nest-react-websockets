@@ -1,7 +1,7 @@
 export interface User {
   userId: string;
   userName: string;
-  socketId?: string;
+  socketId: string;
 }
 
 export interface Message {

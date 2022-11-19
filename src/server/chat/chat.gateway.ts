@@ -5,6 +5,7 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  WsException,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import {

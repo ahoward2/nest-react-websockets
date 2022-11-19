@@ -17,7 +17,7 @@ import { ChatLayout } from '../layouts/chat.layout';
 
 type ChatLocationGenerics = MakeGenerics<{
   LoaderData: {
-    user: User;
+    user: Pick<User, 'userId' | 'userName'>;
   };
 }>;
 
@@ -38,6 +38,7 @@ function Chat() {
     queryKey: ['connected_users'],
     queryFn: async () => axios.get('/api/current-users'),
     refetchInterval: 60000,
+    enabled: isConnected,
   });
 
   useEffect(() => {
@@ -67,7 +68,7 @@ function Chat() {
   }, []);
 
   const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
-    if (user) {
+    if (user && socket) {
       socket.emit('chat', {
         user: {
           userId: user.userId,

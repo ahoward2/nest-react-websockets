@@ -6,7 +6,7 @@ import { LoginLayout } from '../layouts/login.layout';
 
 type LoginLocationGenerics = MakeGenerics<{
   LoaderData: {
-    user: User;
+    user: Pick<User, 'userId' | 'userName'> | '';
   };
 }>;
 

@@ -8,7 +8,7 @@ export const Header = ({
   handleUsersClick,
   title,
 }: {
-  user: User;
+  user: Pick<User, 'userId' | 'userName'>;
   isConnected: boolean;
   users: User[];
   title: string;

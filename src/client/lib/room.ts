@@ -12,3 +12,12 @@ export const useRoomQuery = (roomName, isConnected) => {
   });
   return query;
 };
+
+export const useRoomsQuery = () => {
+  const query = useQuery({
+    queryKey: ['select_rooms'],
+    queryFn: (): Promise<Room[]> =>
+      axios.get(`/api/rooms`).then((response) => response.data),
+  });
+  return query;
+};

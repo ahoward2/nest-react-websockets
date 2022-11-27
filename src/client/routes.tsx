@@ -1,7 +1,7 @@
 import { Outlet, ReactLocation, Router } from '@tanstack/react-location';
-import React, { Suspense } from 'react';
-const Login = React.lazy(() => import('./pages/login'));
-const Chat = React.lazy(() => import('./pages/chat'));
+import React from 'react';
+import Login, { loader as loginLoader } from './pages/login';
+import Chat, { loader as chatLoader } from './pages/chat';
 
 const location = new ReactLocation();
 
@@ -12,27 +12,13 @@ export const AppRouter = () => {
       routes={[
         {
           path: '/',
-          loader: async () => ({
-            user: JSON.parse(sessionStorage.getItem('user') || ''),
-            roomName: sessionStorage.getItem('room'),
-          }),
-          element: async () => (
-            <Suspense fallback={<></>}>
-              <Login></Login>
-            </Suspense>
-          ),
+          element: <Login />,
+          loader: async () => await loginLoader(),
         },
         {
           path: 'chat',
-          loader: async () => ({
-            user: JSON.parse(sessionStorage.getItem('user') || ''),
-            roomName: sessionStorage.getItem('room'),
-          }),
-          element: async () => (
-            <Suspense fallback={<></>}>
-              <Chat></Chat>
-            </Suspense>
-          ),
+          element: <Chat />,
+          loader: async () => await chatLoader(),
         },
       ]}
     >

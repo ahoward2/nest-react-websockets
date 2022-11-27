@@ -3,9 +3,11 @@ import React from 'react';
 export const LoginForm = ({
   login,
   disableNewRoom,
+  defaultUser,
 }: {
   login: (e: React.FormEvent<HTMLFormElement>) => void;
   disableNewRoom: boolean;
+  defaultUser?: string;
 }) => {
   return (
     <div className="h-full w-full">
@@ -20,6 +22,7 @@ export const LoginForm = ({
           type="text"
           id="login"
           placeholder="Name"
+          defaultValue={defaultUser && defaultUser}
           required={true}
           className="mb-2 mr-2 h-12 rounded-md border border-slate-400 bg-gray-800 text-white placeholder-slate-400 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
         ></input>

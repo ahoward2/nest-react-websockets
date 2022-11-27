@@ -21,3 +21,7 @@ export const useRoomsQuery = () => {
   });
   return query;
 };
+
+export const unsetRoom = async () => {
+  await sessionStorage.removeItem('room');
+};

@@ -12,7 +12,8 @@ import { UserList } from '../components/list';
 import { MessageForm } from '../components/message.form';
 import { Messages } from '../components/messages';
 import { ChatLayout } from '../layouts/chat.layout';
-import { useRoomQuery } from '../lib/room';
+import { unsetRoom, useRoomQuery } from '../lib/room';
+import { getUser } from '../lib/user';
 
 type ChatLocationGenerics = MakeGenerics<{
   LoaderData: {
@@ -21,19 +22,18 @@ type ChatLocationGenerics = MakeGenerics<{
   };
 }>;
 
-const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
+  autoConnect: false,
+});
 
 function Chat() {
   const {
     data: { user, roomName },
   } = useMatch<ChatLocationGenerics>();
-
   const navigate = useNavigate();
-
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [messages, setMessages] = useState<Message[]>([]);
   const [toggleUserList, setToggleUserList] = useState<boolean>(false);
-
   const { data: room } = useRoomQuery(roomName, isConnected);
 
   useEffect(() => {
@@ -55,14 +55,21 @@ function Chat() {
       socket.on('chat', (e) => {
         setMessages((messages) => [e, ...messages]);
       });
-    }
 
+      socket.connect();
+    }
     return () => {
       socket.off('connect');
       socket.off('disconnect');
       socket.off('chat');
     };
   }, []);
+
+  const leaveRoom = () => {
+    socket.disconnect();
+    unsetRoom();
+    navigate({ to: '/', replace: true });
+  };
 
   const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     if (user && socket && roomName) {
@@ -80,7 +87,7 @@ function Chat() {
   };
   return (
     <>
-      {user && user.userId && roomName && room ? (
+      {user?.userId && roomName && room ? (
         <ChatLayout>
           <Header
             user={user}
@@ -91,6 +98,7 @@ function Chat() {
               setToggleUserList((toggleUserList) => !toggleUserList)
             }
             title={toggleUserList ? 'Connected Users' : 'Chat'}
+            handleLeaveRoom={() => leaveRoom()}
           ></Header>
           {toggleUserList ? (
             <UserList room={room}></UserList>
@@ -105,5 +113,13 @@ function Chat() {
     </>
   );
 }
+
+export const loader = async () => {
+  const user = getUser();
+  return {
+    user: user,
+    roomName: sessionStorage.getItem('room'),
+  };
+};
 
 export default Chat;

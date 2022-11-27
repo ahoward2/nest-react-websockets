@@ -1,5 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { Room, User } from '../../shared/interfaces/chat.interface';
+import { Room } from '../../shared/interfaces/chat.interface';
 import { UserService } from './user.service';
 
 @Controller()

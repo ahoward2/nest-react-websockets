@@ -5,16 +5,18 @@ import { LoginForm } from '../components/login.form';
 import { Rooms } from '../components/rooms';
 import { LoginLayout } from '../layouts/login.layout';
 import { useRoomsQuery } from '../lib/room';
+import { getUser, setUser } from '../lib/user';
 
 type LoginLocationGenerics = MakeGenerics<{
   LoaderData: {
-    user: Pick<User, 'userId' | 'userName'> | '';
+    user: Pick<User, 'userId' | 'userName'>;
+    roomName: string;
   };
 }>;
 
 function Login() {
   const {
-    data: { user },
+    data: { user, roomName },
   } = useMatch<LoginLocationGenerics>();
 
   const [joinRoomSelection, setJoinRoomSelection] = useState<string>('');
@@ -27,24 +29,24 @@ function Login() {
     setJoinRoomSelection(roomName);
   };
 
-  const login = (e: React.FormEvent<HTMLFormElement>) => {
+  const login = async (e: React.FormEvent<HTMLFormElement>) => {
     const userFormValue = e.target[0].value;
     const roomFormValue = e.target[1].value;
     const newUser = {
       userId: Date.now().toLocaleString().concat(userFormValue),
       userName: userFormValue,
     };
-    sessionStorage.setItem('user', JSON.stringify(newUser));
+    await setUser({ id: newUser.userId, name: newUser.userName });
     if (joinRoomSelection !== '') {
-      sessionStorage.setItem('room', joinRoomSelection);
+      await sessionStorage.setItem('room', joinRoomSelection);
     } else {
-      sessionStorage.setItem('room', roomFormValue);
+      await sessionStorage.setItem('room', roomFormValue);
     }
-    navigate({ to: '/chat', replace: true });
+    navigate({ to: '/chat' });
   };
 
   useEffect(() => {
-    if (user) {
+    if (user?.userId && roomName) {
       navigate({ to: '/chat', replace: true });
     }
   }, []);
@@ -52,6 +54,7 @@ function Login() {
   return (
     <LoginLayout>
       <LoginForm
+        defaultUser={user?.userName}
         disableNewRoom={joinRoomSelection !== ''}
         login={login}
       ></LoginForm>
@@ -67,5 +70,13 @@ function Login() {
     </LoginLayout>
   );
 }
+
+export const loader = async () => {
+  const user = getUser();
+  return {
+    user: user,
+    roomName: sessionStorage.getItem('room'),
+  };
+};
 
 export default Login;

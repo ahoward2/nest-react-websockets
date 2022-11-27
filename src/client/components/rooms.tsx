@@ -19,19 +19,20 @@ export const Rooms = ({
         )}
       </div>
       <div className="w-full">
-        {rooms.map((room, index) => (
-          <button
-            key={index}
-            className={
-              selectedRoom === room.name
-                ? 'w-full bg-slate-900 p-2 text-left text-gray-400'
-                : ' w-full p-2 text-left text-gray-400'
-            }
-            onClick={() => selectionHandler(room.name)}
-          >
-            {room.name}
-          </button>
-        ))}
+        {rooms &&
+          rooms.map((room, index) => (
+            <button
+              key={index}
+              className={
+                selectedRoom === room.name
+                  ? 'w-full bg-slate-900 p-2 text-left text-gray-400'
+                  : ' w-full p-2 text-left text-gray-400'
+              }
+              onClick={() => selectionHandler(room.name)}
+            >
+              {room.name}
+            </button>
+          ))}
       </div>
     </div>
   );

@@ -16,11 +16,7 @@ function Login() {
 
   const navigate = useNavigate();
 
-  const {
-    data: rooms,
-    isLoading: roomsLoading,
-    isFetching: roomsRefetching,
-  } = useRoomsQuery();
+  const { data: rooms, isLoading: roomsLoading } = useRoomsQuery();
 
   const selectExistingRoom = (roomName: string) => {
     setJoinRoomSelection(roomName);

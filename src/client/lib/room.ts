@@ -22,6 +22,6 @@ export const useRoomsQuery = () => {
   return query;
 };
 
-export const unsetRoom = async () => {
-  await sessionStorage.removeItem('room');
+export const unsetRoom = () => {
+  sessionStorage.removeItem('room');
 };

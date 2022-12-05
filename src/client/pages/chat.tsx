@@ -15,13 +15,6 @@ import { ChatLayout } from '../layouts/chat.layout';
 import { unsetRoom, useRoomQuery } from '../lib/room';
 import { getUser } from '../lib/user';
 
-type ChatLocationGenerics = MakeGenerics<{
-  LoaderData: {
-    user: Pick<User, 'userId' | 'userName'>;
-    roomName: string;
-  };
-}>;
-
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
   autoConnect: false,
 });
@@ -117,5 +110,12 @@ export const loader = async () => {
     roomName: sessionStorage.getItem('room'),
   };
 };
+
+type ChatLocationGenerics = MakeGenerics<{
+  LoaderData: {
+    user: Pick<User, 'userId' | 'userName'>;
+    roomName: string;
+  };
+}>;
 
 export default Chat;

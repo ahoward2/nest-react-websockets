@@ -71,7 +71,7 @@ function Chat() {
     navigate({ to: '/', replace: true });
   };
 
-  const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
+  const sendMessage = (message: string) => {
     if (user && socket && roomName) {
       socket.emit('chat', {
         user: {
@@ -80,24 +80,22 @@ function Chat() {
           socketId: socket.id,
         },
         timeSent: new Date(Date.now()).toLocaleString('en-US'),
-        message: e.target[0].value,
+        message,
         roomName: roomName,
       });
     }
   };
   return (
     <>
-      {user?.userId && roomName && room ? (
+      {user?.userId && roomName && room && (
         <ChatLayout>
           <Header
-            user={user}
             isConnected={isConnected}
             users={room?.users ?? []}
             roomName={roomName}
             handleUsersClick={() =>
               setToggleUserList((toggleUserList) => !toggleUserList)
             }
-            title={toggleUserList ? 'Connected Users' : 'Chat'}
             handleLeaveRoom={() => leaveRoom()}
           ></Header>
           {toggleUserList ? (
@@ -107,8 +105,6 @@ function Chat() {
           )}
           <MessageForm sendMessage={sendMessage}></MessageForm>
         </ChatLayout>
-      ) : (
-        <></>
       )}
     </>
   );

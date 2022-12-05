@@ -1,15 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Room } from '../../shared/interfaces/chat.interface';
+import { Loading } from './loading';
 
 export const Rooms = ({
   rooms,
   selectionHandler,
   selectedRoom,
+  isLoading,
 }: {
   rooms: Room[];
   selectionHandler: (roomName: string) => void;
   selectedRoom?: string;
+  isLoading: boolean;
 }) => {
+  const [isDelay, setIsDelay] = useState(true);
+  useEffect(() => {
+    const delayTimer = setTimeout(() => {
+      setIsDelay(false);
+    }, 1000);
+    return () => {
+      clearTimeout(delayTimer);
+    };
+  }, []);
+
   return (
     <div className="my-auto h-full w-full rounded-lg border border-slate-400 bg-gray-800">
       <div className="flex justify-between rounded-t-md border border-slate-400 bg-slate-400 p-2">
@@ -19,7 +32,8 @@ export const Rooms = ({
         )}
       </div>
       <div className="w-full">
-        {rooms &&
+        {!isLoading &&
+          !isDelay &&
           rooms.map((room, index) => (
             <button
               key={index}
@@ -33,6 +47,7 @@ export const Rooms = ({
               {room.name}
             </button>
           ))}
+        {(isLoading || isDelay) && <Loading />}
       </div>
     </div>
   );

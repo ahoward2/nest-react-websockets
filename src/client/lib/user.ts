@@ -16,3 +16,7 @@ export const getUser = () => {
     userName,
   };
 };
+
+export const generateUserId = (userName: string) => {
+  return Date.now().toLocaleString().concat(userName);
+};

@@ -7,12 +7,12 @@ const determineMessageStyle = (
 ) => {
   if (user && messageUserId === user.userId) {
     return {
-      message: 'bg-violet-500 p-4 ml-24 mb-4 rounded',
+      message: 'bg-slate-500 p-4 ml-24 mb-4 rounded break-words',
       sender: 'ml-24 pl-4',
     };
   } else {
     return {
-      message: 'bg-slate-700 p-4 mr-24 mb-4 rounded',
+      message: 'bg-slate-800 p-4 mr-24 mb-4 rounded break-words',
       sender: 'mr-24 pl-4',
     };
   }

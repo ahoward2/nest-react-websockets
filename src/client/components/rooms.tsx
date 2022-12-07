@@ -24,7 +24,7 @@ export const Rooms = ({
   }, []);
 
   return (
-    <div className="my-auto h-full w-full rounded-lg border border-slate-400 bg-gray-800">
+    <div className="h-full w-full rounded-lg border border-slate-400 bg-gray-800 md:h-1/2">
       <div className="flex justify-between rounded-t-md border border-slate-400 bg-slate-400 p-2">
         <span>Join existing rooms</span>
         {selectedRoom && (

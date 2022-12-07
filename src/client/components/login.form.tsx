@@ -10,7 +10,7 @@ export const LoginForm = ({
   defaultUser?: string;
 }) => {
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full py-2 md:px-2 md:py-0">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -24,33 +24,20 @@ export const LoginForm = ({
           placeholder="Name"
           defaultValue={defaultUser && defaultUser}
           required={true}
-          className="mb-2 mr-2 h-12 rounded-md border border-slate-400 bg-gray-800 text-white placeholder-slate-400 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
+          className="mb-2 h-12 rounded-md border border-slate-400 bg-gray-800 text-white placeholder-slate-400 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
         ></input>
         <input
           type="text"
           id="room"
           disabled={disableNewRoom}
           placeholder="New room"
-          className="mb-2 mr-2 h-12 rounded-md border border-slate-400 bg-gray-800 text-white placeholder-slate-400 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 disabled:opacity-50"
+          className="mb-2 h-12 rounded-md border border-slate-400 bg-gray-800 text-white placeholder-slate-400 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 disabled:opacity-50"
         ></input>
         <button
           type="submit"
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-700 text-white"
+          className="flex h-12 w-full items-center justify-center rounded-md bg-violet-700 text-white"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="h-6 w-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-            />
-          </svg>
+          Join
         </button>
       </form>
     </div>

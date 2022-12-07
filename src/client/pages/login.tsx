@@ -42,18 +42,17 @@ function Login() {
 
   return (
     <LoginLayout>
-      <LoginForm
-        defaultUser={user?.userName}
-        disableNewRoom={joinRoomSelection !== ''}
-        login={login}
-      ></LoginForm>
-
       <Rooms
         rooms={rooms ?? []}
         selectionHandler={setJoinRoomSelection}
         selectedRoom={joinRoomSelection}
         isLoading={roomsLoading}
       ></Rooms>
+      <LoginForm
+        defaultUser={user?.userName}
+        disableNewRoom={joinRoomSelection !== ''}
+        login={login}
+      ></LoginForm>
     </LoginLayout>
   );
 }

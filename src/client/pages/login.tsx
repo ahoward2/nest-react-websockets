@@ -1,5 +1,5 @@
-import { MakeGenerics, useMatch, useNavigate } from '@tanstack/react-location';
 import React, { useEffect, useState } from 'react';
+import { MakeGenerics, useMatch, useNavigate } from '@tanstack/react-location';
 import { User } from '../../shared/interfaces/chat.interface';
 import { LoginForm } from '../components/login.form';
 import { Rooms } from '../components/rooms';
@@ -17,10 +17,6 @@ function Login() {
   const navigate = useNavigate();
 
   const { data: rooms, isLoading: roomsLoading } = useRoomsQuery();
-
-  const selectExistingRoom = (roomName: string) => {
-    setJoinRoomSelection(roomName);
-  };
 
   const login = async (e: React.FormEvent<HTMLFormElement>) => {
     const userFormValue = e.target[0].value;
@@ -54,7 +50,7 @@ function Login() {
 
       <Rooms
         rooms={rooms ?? []}
-        selectionHandler={selectExistingRoom}
+        selectionHandler={setJoinRoomSelection}
         selectedRoom={joinRoomSelection}
         isLoading={roomsLoading}
       ></Rooms>

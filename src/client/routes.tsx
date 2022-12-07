@@ -1,5 +1,5 @@
-import { Outlet, ReactLocation, Router } from '@tanstack/react-location';
 import React from 'react';
+import { Outlet, ReactLocation, Router } from '@tanstack/react-location';
 import Login, { loader as loginLoader } from './pages/login';
 import Chat, { loader as chatLoader } from './pages/chat';
 

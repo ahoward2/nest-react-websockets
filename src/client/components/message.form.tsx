@@ -23,7 +23,7 @@ export const MessageForm = ({
   };
 
   return (
-    <div className="h-1/6">
+    <div className="flex h-1/6 items-center">
       <form className="flex w-full appearance-none rounded-md bg-gray-800 outline-none focus:outline-none">
         <textarea
           ref={textAreaRef}

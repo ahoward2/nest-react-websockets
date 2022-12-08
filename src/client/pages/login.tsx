@@ -18,7 +18,7 @@ function Login() {
 
   const navigate = useNavigate();
 
-  const login = async (e: React.FormEvent<HTMLFormElement>) => {
+  const login = (e: React.FormEvent<HTMLFormElement>) => {
     const userFormValue = e.target[0].value;
     const roomFormValue = e.target[1].value;
     const newUser = {

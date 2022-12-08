@@ -6,7 +6,7 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
+import { Logger, UsePipes } from '@nestjs/common';
 import {
   ServerToClientEvents,
   ClientToServerEvents,
@@ -15,6 +15,8 @@ import {
 } from '../../shared/interfaces/chat.interface';
 import { Server, Socket } from 'socket.io';
 import { UserService } from '../user/user.service';
+import { ZodValidationPipe } from './pipes/chat.pipe';
+import { ChatMessageSchema } from '../../shared/schemas/chat.schema';
 
 @WebSocketGateway({
   cors: {
@@ -31,6 +33,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private logger = new Logger('ChatGateway');
 
+  @UsePipes(new ZodValidationPipe(ChatMessageSchema))
   @SubscribeMessage('chat')
   async handleChatEvent(
     @MessageBody()

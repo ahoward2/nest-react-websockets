@@ -1,21 +1,15 @@
-export interface User {
-  userId: string;
-  userName: string;
-  socketId: string;
-}
+import { z } from 'zod';
+import {
+  ChatMessageSchema,
+  RoomSchema,
+  UserSchema,
+} from '../schemas/chat.schema';
 
-export interface Room {
-  name: string;
-  host: User;
-  users: User[];
-}
+export type User = z.infer<typeof UserSchema>;
 
-export interface Message {
-  user: User;
-  timeSent: string;
-  message: string;
-  roomName: string;
-}
+export type Room = z.infer<typeof RoomSchema>;
+
+export type Message = z.infer<typeof ChatMessageSchema>;
 
 export interface ServerToClientEvents {
   chat: (e: Message) => void;

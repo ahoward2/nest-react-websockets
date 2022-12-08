@@ -14,6 +14,7 @@
     "allowJs": true,
     "outDir": "dist/server",
     "strict": true,
+    "strictPropertyInitialization": false,
     "lib": ["es7"]
   },
   "include": ["src/server", "src/shared"],

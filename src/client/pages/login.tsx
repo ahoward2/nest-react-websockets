@@ -14,9 +14,9 @@ function Login() {
 
   const [joinRoomSelection, setJoinRoomSelection] = useState<string>('');
 
-  const navigate = useNavigate();
-
   const { data: rooms, isLoading: roomsLoading } = useRoomsQuery();
+
+  const navigate = useNavigate();
 
   const login = async (e: React.FormEvent<HTMLFormElement>) => {
     const userFormValue = e.target[0].value;

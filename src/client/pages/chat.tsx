@@ -23,11 +23,14 @@ function Chat() {
   const {
     data: { user, roomName },
   } = useMatch<ChatLocationGenerics>();
-  const navigate = useNavigate();
+
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [messages, setMessages] = useState<Message[]>([]);
   const [toggleUserList, setToggleUserList] = useState<boolean>(false);
+
   const { data: room } = useRoomQuery(roomName, isConnected);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user || !roomName) {

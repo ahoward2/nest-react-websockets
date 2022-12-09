@@ -2,7 +2,11 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { RoomName, UserName } from '../../shared/schemas/chat.schema';
+import {
+  RoomName,
+  UserName,
+  RoomNameRegex,
+} from '../../shared/schemas/chat.schema';
 import { generateUserId, setUser } from '../lib/user';
 
 const formSchema = z.object({
@@ -64,11 +68,12 @@ export const LoginForm = ({
           id="room"
           required={!disableNewRoom}
           disabled={disableNewRoom}
-          minLength={RoomName.minLength ?? 1}
-          maxLength={RoomName.maxLength ?? 16}
+          minLength={RoomName?.minLength ?? undefined}
+          maxLength={RoomName?.maxLength ?? undefined}
+          pattern={RoomNameRegex.source.toString()}
           placeholder="New room"
           {...register('roomName')}
-          className="h-12 rounded-md border border-slate-400 bg-gray-800 text-white placeholder-slate-400 invalid:border-pink-600 invalid:text-pink-600 invalid:ring-pink-600 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-600 disabled:opacity-50"
+          className="h-12 rounded-md border border-slate-400 bg-gray-800 text-white placeholder-slate-400 invalid:text-pink-600 invalid:ring-pink-600 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-600 disabled:opacity-50"
         ></input>
         <p className="py-1 text-sm text-pink-600">{errors.roomName?.message}</p>
 

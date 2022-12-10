@@ -7,7 +7,10 @@ export const UserNameSchema = z
   .min(1, { message: 'Must be at least 1 character.' })
   .max(16, { message: 'Must be at most 16 characters.' });
 
-export const MessageSchema = z.string().min(1).max(1000);
+export const MessageSchema = z
+  .string()
+  .min(1, { message: 'Must be at least 1 character.' })
+  .max(1000, { message: 'Must be at most 1000 characters.' });
 
 export const TimeSentSchema = z.string();
 

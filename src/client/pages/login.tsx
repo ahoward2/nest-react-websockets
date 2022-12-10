@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { MakeGenerics, useMatch, useNavigate } from '@tanstack/react-location';
 import { User } from '../../shared/interfaces/chat.interface';
-import { LoginForm } from '../components/login.form';
+import { LoginForm, LoginFormInputs } from '../components/login.form';
 import { Rooms } from '../components/rooms';
 import { LoginLayout } from '../layouts/login.layout';
 import { useRoomsQuery } from '../lib/room';
-import { generateUserId, getUser, setUser } from '../lib/user';
+import { getUser } from '../lib/user';
 
 function Login() {
   const {
@@ -18,18 +18,11 @@ function Login() {
 
   const navigate = useNavigate();
 
-  const login = (e: React.FormEvent<HTMLFormElement>) => {
-    const userFormValue = e.target[0].value;
-    const roomFormValue = e.target[1].value;
-    const newUser = {
-      userId: generateUserId(userFormValue),
-      userName: userFormValue,
-    };
-    setUser({ id: newUser.userId, name: newUser.userName });
+  const handleRoomSelection = (data: LoginFormInputs) => {
     if (joinRoomSelection !== '') {
       sessionStorage.setItem('room', joinRoomSelection);
-    } else {
-      sessionStorage.setItem('room', roomFormValue);
+    } else if (data.roomName) {
+      sessionStorage.setItem('room', data.roomName);
     }
     navigate({ to: '/chat' });
   };
@@ -51,7 +44,7 @@ function Login() {
       <LoginForm
         defaultUser={user?.userName}
         disableNewRoom={joinRoomSelection !== ''}
-        login={login}
+        onSubmitSecondary={handleRoomSelection}
       ></LoginForm>
     </LoginLayout>
   );

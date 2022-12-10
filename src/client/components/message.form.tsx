@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { MessageSchema } from '../../shared/schemas/chat.schema';
 
 export const MessageForm = ({
   sendMessage,
@@ -30,6 +31,7 @@ export const MessageForm = ({
           onKeyDown={(e) => handleKeyDown(e)}
           id="minput"
           placeholder="Message"
+          maxLength={MessageSchema?.maxLength ?? undefined}
           className="mb-2 max-h-16 flex-grow appearance-none rounded-md border-none bg-gray-800 text-white placeholder-slate-400 focus:outline-none focus:ring-transparent"
         ></textarea>
         <button

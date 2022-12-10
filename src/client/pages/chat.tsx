@@ -14,6 +14,10 @@ import { Messages } from '../components/messages';
 import { ChatLayout } from '../layouts/chat.layout';
 import { unsetRoom, useRoomQuery } from '../lib/room';
 import { getUser } from '../lib/user';
+import {
+  ChatMessageSchema,
+  JoinRoomSchema,
+} from '../../shared/schemas/chat.schema';
 
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
   autoConnect: false,
@@ -37,10 +41,12 @@ function Chat() {
       navigate({ to: '/', replace: true });
     } else {
       socket.on('connect', () => {
-        socket.emit('join_room', {
+        const joinRoom = {
           roomName,
           user: { socketId: socket.id, ...user },
-        });
+        };
+        JoinRoomSchema.parse(joinRoom);
+        socket.emit('join_room', joinRoom);
         setIsConnected(true);
       });
 
@@ -69,7 +75,7 @@ function Chat() {
 
   const sendMessage = (message: string) => {
     if (user && socket && roomName) {
-      socket.emit('chat', {
+      const chatMessage = {
         user: {
           userId: user.userId,
           userName: user.userName,
@@ -78,7 +84,9 @@ function Chat() {
         timeSent: new Date(Date.now()).toLocaleString('en-US'),
         message,
         roomName: roomName,
-      });
+      };
+      ChatMessageSchema.parse(chatMessage);
+      socket.emit('chat', chatMessage);
     }
   };
   return (

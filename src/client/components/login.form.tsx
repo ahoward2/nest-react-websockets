@@ -57,8 +57,8 @@ export const LoginForm = ({
           placeholder="Name"
           defaultValue={defaultUser && defaultUser}
           required={true}
-          minLength={UserNameSchema.minLength ?? 1}
-          maxLength={UserNameSchema.maxLength ?? 16}
+          minLength={UserNameSchema.minLength ?? undefined}
+          maxLength={UserNameSchema.maxLength ?? undefined}
           {...register('userName')}
           className="h-12 rounded-md border border-slate-400 bg-gray-800 text-white placeholder-slate-400 invalid:text-pink-600 invalid:ring-pink-600 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-600 active:invalid:border-pink-600"
         ></input>

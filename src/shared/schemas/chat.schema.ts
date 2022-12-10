@@ -1,46 +1,50 @@
 import { z } from 'zod';
 
-export const UserId = z.string().min(1).max(24);
+export const UserIdSchema = z.string().min(1).max(24);
 
-export const UserName = z
+export const UserNameSchema = z
   .string()
   .min(1, { message: 'Must be at least 1 character.' })
   .max(16, { message: 'Must be at most 16 characters.' });
 
-export const Message = z.string().min(1).max(1000);
+export const MessageSchema = z.string().min(1).max(1000);
 
-export const TimeSent = z.string();
+export const TimeSentSchema = z.string();
 
-export const RoomNameRegex = new RegExp('^\\S+\\w$');
+export const RoomNameSchemaRegex = new RegExp('^\\S+\\w$');
 
-export const RoomName = z
+export const RoomNameSchema = z
   .string()
   .min(2, { message: 'Must be at least 2 characters.' })
   .max(16, { message: 'Must be at most 16 characters.' })
-  .regex(RoomNameRegex, {
+  .regex(RoomNameSchemaRegex, {
     message: 'Must not contain spaces or special characters.',
   });
 
+export const SocketIdSchema = z
+  .string()
+  .length(20, { message: 'Must be 20 characters.' });
+
 export const UserSchema = z.object({
-  userId: UserId,
-  userName: UserName,
-  socketId: z.string(),
+  userId: UserIdSchema,
+  userName: UserNameSchema,
+  socketId: SocketIdSchema,
 });
 
 export const ChatMessageSchema = z.object({
   user: UserSchema,
-  timeSent: TimeSent,
-  message: Message,
-  roomName: RoomName,
+  timeSent: TimeSentSchema,
+  message: MessageSchema,
+  roomName: RoomNameSchema,
 });
 
 export const RoomSchema = z.object({
-  name: RoomName,
+  name: RoomNameSchema,
   host: UserSchema,
   users: UserSchema.array(),
 });
 
 export const JoinRoomSchema = z.object({
   user: UserSchema,
-  roomName: RoomName,
+  roomName: RoomNameSchema,
 });

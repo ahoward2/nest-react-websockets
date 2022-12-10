@@ -11,7 +11,6 @@ import {
   ServerToClientEvents,
   ClientToServerEvents,
   Message,
-  User,
   JoinRoom,
 } from '../../shared/interfaces/chat.interface';
 import { Server, Socket } from 'socket.io';

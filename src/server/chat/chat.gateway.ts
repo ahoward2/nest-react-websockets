@@ -15,7 +15,7 @@ import {
 } from '../../shared/interfaces/chat.interface';
 import { Server, Socket } from 'socket.io';
 import { UserService } from '../user/user.service';
-import { ZodValidationPipe } from './pipes/chat.pipe';
+import { ZodValidationPipe } from '../pipes/zod.pipe';
 import {
   ChatMessageSchema,
   JoinRoomSchema,

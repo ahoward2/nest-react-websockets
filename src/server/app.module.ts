@@ -3,6 +3,7 @@ import { ChatModule } from './chat/chat.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { UserModule } from './user/user.module';
+import { CaslModule } from './casl/casl.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { UserModule } from './user/user.module';
       exclude: ['/api*'],
     }),
     UserModule,
+    CaslModule,
   ],
 })
 export class AppModule {}

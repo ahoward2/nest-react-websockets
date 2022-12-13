@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { MakeGenerics, useMatch, useNavigate } from '@tanstack/react-location';
 import { io, Socket } from 'socket.io-client';
@@ -18,6 +19,7 @@ import {
   ChatMessageSchema,
   JoinRoomSchema,
 } from '../../shared/schemas/chat.schema';
+import axios from 'axios';
 
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
   autoConnect: false,
@@ -48,6 +50,13 @@ function Chat() {
         JoinRoomSchema.parse(joinRoom);
         socket.emit('join_room', joinRoom);
         setIsConnected(true);
+        axios.interceptors.request.use((request) => {
+          request.headers['user'] = JSON.stringify({
+            socketId: socket.id,
+            ...user,
+          });
+          return request;
+        });
       });
 
       socket.on('disconnect', () => {

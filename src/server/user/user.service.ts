@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Room, User } from '../../shared/interfaces/chat.interface';
+import { Room } from '../entities/room.entity';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -8,7 +9,9 @@ export class UserService {
   async addRoom(roomName: string, host: User): Promise<void> {
     const room = await this.getRoomByName(roomName);
     if (room === -1) {
-      await this.rooms.push({ name: roomName, host, users: [host] });
+      await this.rooms.push(
+        new Room({ name: roomName, host: host, users: [host] }),
+      );
     }
   }
 
@@ -31,11 +34,16 @@ export class UserService {
 
   async addUserToRoom(roomName: string, user: User): Promise<void> {
     const roomIndex = await this.getRoomByName(roomName);
+    const newUser = new User({
+      userId: user.userId,
+      userName: user.userName,
+      socketId: user.socketId,
+    });
     if (roomIndex !== -1) {
-      this.rooms[roomIndex].users.push(user);
+      this.rooms[roomIndex].users.push(newUser);
       const host = await this.getRoomHost(roomName);
-      if (host.userId === user.userId) {
-        this.rooms[roomIndex].host.socketId = user.socketId;
+      if (host.userId === newUser.userId) {
+        this.rooms[roomIndex].host.socketId = newUser.socketId;
       }
     } else {
       await this.addRoom(roomName, user);

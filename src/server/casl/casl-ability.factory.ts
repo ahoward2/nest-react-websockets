@@ -19,18 +19,26 @@ export enum Action {
 
 type Subjects = InferSubjects<typeof Room | typeof User> | 'all';
 export type AppAbility = MongoAbility<[Action, Subjects]>;
+type FlatRoom = Room & {
+  'host.userId': Room['host']['userId'];
+};
 
 @Injectable()
 export class CaslAbilityFactory {
-  defineAbilityFor(user: User) {
+  createForUser(user: User) {
     const { can, build } = new AbilityBuilder<AppAbility>(createMongoAbility);
 
-    can(Action.Create, User);
-    can(Action.Read, User);
-    can(Action.Read, Room, {
-      name: 'newroom',
+    // All users can read all rooms
+    can(Action.Read, Room);
+
+    // Host can manage room
+    can<FlatRoom>(Action.Manage, Room, {
+      'host.userId': user.userId,
     });
 
-    return build();
+    return build({
+      detectSubjectType: (object) =>
+        object.constructor as ExtractSubjectType<Subjects>,
+    });
   }
 }

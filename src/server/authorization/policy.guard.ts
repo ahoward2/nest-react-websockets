@@ -1,36 +1,49 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { Request } from 'express';
 import {
   Action,
   AppAbility,
   CaslAbilityFactory,
 } from '../casl/casl-ability.factory';
-import { Room } from '../entities/room.entity';
-import { User } from '../entities/user.entity';
+import { UserService } from '../user/user.service';
 import { PolicyHandler } from './interfaces/policy.interface';
-import { CHECK_POLICIES_KEY } from './policy.decorator';
 
 @Injectable()
 export class PoliciesGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private caslAbilityFactory: CaslAbilityFactory,
+    private userService: UserService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const policyHandlers =
-      this.reflector.get<PolicyHandler[]>(
-        CHECK_POLICIES_KEY,
-        context.getHandler(),
-      ) || [];
+    const policyHandlers: PolicyHandler[] = [];
 
-    const { req } = context.switchToHttp().getResponse();
-    const user = new User({ ...JSON.parse(req.get('user')) });
+    // CHECK HTTP CONTEXTS ========================================
+
+    const ctx = context.switchToHttp();
+    const request = ctx.getRequest<Request>();
+    const rawUser = request.get('user');
+    const params = request.params;
+
+    if (!rawUser) {
+      return false;
+    }
+
+    const user = JSON.parse(rawUser);
+    const { room: roomName } = params;
+
     console.log('User from policies guard: ', user);
-    const ability = this.caslAbilityFactory.defineAbilityFor(user);
+    const ability = this.caslAbilityFactory.createForUser(user);
 
-    const room = new Room({ name: 'newroom', host: user, users: [user] });
-    console.log(ability.can(Action.Read, room));
+    if (roomName) {
+      const rooms = await this.userService.getRooms();
+      const roomIndex = await this.userService.getRoomByName(roomName);
+      policyHandlers.push((ability) =>
+        ability.can(Action.Read, rooms[roomIndex]),
+      );
+    }
 
     return policyHandlers.every((handler) =>
       this.execPolicyHandler(handler, ability),

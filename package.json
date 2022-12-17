@@ -17,6 +17,7 @@
     "start:prodserver": "node dist/server/server/main"
   },
   "dependencies": {
+    "@casl/ability": "^6.3.3",
     "@hookform/resolvers": "^2.9.10",
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",

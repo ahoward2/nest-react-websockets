@@ -6,20 +6,24 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { Logger, UsePipes } from '@nestjs/common';
+import { Logger, UseGuards, UsePipes } from '@nestjs/common';
 import {
   ServerToClientEvents,
   ClientToServerEvents,
   Message,
   JoinRoom,
+  KickUser,
 } from '../../shared/interfaces/chat.interface';
 import { Server, Socket } from 'socket.io';
-import { UserService } from '../user/user.service';
+import { RoomService } from '../room/room.service';
 import { ZodValidationPipe } from '../pipes/zod.pipe';
 import {
   ChatMessageSchema,
   JoinRoomSchema,
+  KickUserSchema,
 } from '../../shared/schemas/chat.schema';
+import { UserService } from '../user/user.service';
+import { ChatPoliciesGuard } from './guards/chat.guard';
 
 @WebSocketGateway({
   cors: {
@@ -27,7 +31,10 @@ import {
   },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private userService: UserService) {}
+  constructor(
+    private roomService: RoomService,
+    private userService: UserService,
+  ) {}
 
   @WebSocketServer() server: Server = new Server<
     ServerToClientEvents,
@@ -56,9 +63,34 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.logger.log(
         `${payload.user.socketId} is joining ${payload.roomName}`,
       );
+      await this.userService.addUser(payload.user);
       await this.server.in(payload.user.socketId).socketsJoin(payload.roomName);
-      await this.userService.addUserToRoom(payload.roomName, payload.user);
+      await this.roomService.addUserToRoom(payload.roomName, payload.user);
     }
+  }
+
+  @UseGuards(ChatPoliciesGuard)
+  @UsePipes(new ZodValidationPipe(KickUserSchema))
+  @SubscribeMessage('kick_user')
+  async handleKickUserEvent(
+    @MessageBody() payload: KickUser,
+  ): Promise<boolean> {
+    this.logger.log(
+      `${payload.user.userName} is getting kicked from ${payload.roomName}`,
+    );
+    await this.server.to(payload.roomName).emit('kick_user', payload);
+    await this.server.in(payload.user.socketId).socketsLeave(payload.roomName);
+    await this.server.to(payload.roomName).emit('chat', {
+      user: {
+        userId: 'serverId',
+        userName: 'TheServer',
+        socketId: 'ServerSocketId',
+      },
+      timeSent: new Date(Date.now()).toLocaleString('en-US'),
+      message: `${payload.user.userName} was kicked.`,
+      roomName: payload.roomName,
+    });
+    return true;
   }
 
   async handleConnection(socket: Socket): Promise<void> {
@@ -66,7 +98,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(socket: Socket): Promise<void> {
-    await this.userService.removeUserFromAllRooms(socket.id);
+    const user = await this.roomService.getFirstInstanceOfUser(socket.id);
+    if (user) {
+      await this.userService.removeUserById(user.userId);
+    }
+    await this.roomService.removeUserFromAllRooms(socket.id);
     this.logger.log(`Socket disconnected: ${socket.id}`);
   }
 }

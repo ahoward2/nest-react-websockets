@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   ChatMessageSchema,
   JoinRoomSchema,
+  KickUserSchema,
   RoomNameSchema,
   RoomSchema,
   SocketIdSchema,
@@ -21,12 +22,15 @@ export type Room = z.infer<typeof RoomSchema>;
 export type Message = z.infer<typeof ChatMessageSchema>;
 
 export type JoinRoom = z.infer<typeof JoinRoomSchema>;
+export type KickUser = z.infer<typeof KickUserSchema>;
 
 export interface ServerToClientEvents {
   chat: (e: Message) => void;
+  kick_user: (e: KickUser) => void;
 }
 
 export interface ClientToServerEvents {
   chat: (e: Message) => void;
   join_room: (e: JoinRoom) => void;
+  kick_user: (e: KickUser) => void;
 }

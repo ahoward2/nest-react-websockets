@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { MakeGenerics, useMatch, useNavigate } from '@tanstack/react-location';
 import { io, Socket } from 'socket.io-client';
@@ -7,6 +6,7 @@ import {
   Message,
   ServerToClientEvents,
   ClientToServerEvents,
+  KickUser,
 } from '../../shared/interfaces/chat.interface';
 import { Header } from '../components/header';
 import { UserList } from '../components/list';
@@ -18,8 +18,8 @@ import { getUser } from '../lib/user';
 import {
   ChatMessageSchema,
   JoinRoomSchema,
+  KickUserSchema,
 } from '../../shared/schemas/chat.schema';
-import axios from 'axios';
 
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
   autoConnect: false,
@@ -34,7 +34,10 @@ function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [toggleUserList, setToggleUserList] = useState<boolean>(false);
 
-  const { data: room } = useRoomQuery(roomName, isConnected);
+  const { data: room, refetch: roomRefetch } = useRoomQuery(
+    roomName,
+    isConnected,
+  );
 
   const navigate = useNavigate();
 
@@ -50,13 +53,6 @@ function Chat() {
         JoinRoomSchema.parse(joinRoom);
         socket.emit('join_room', joinRoom);
         setIsConnected(true);
-        axios.interceptors.request.use((request) => {
-          request.headers['user'] = JSON.stringify({
-            socketId: socket.id,
-            ...user,
-          });
-          return request;
-        });
       });
 
       socket.on('disconnect', () => {
@@ -67,12 +63,20 @@ function Chat() {
         setMessages((messages) => [e, ...messages]);
       });
 
+      socket.on('kick_user', (e) => {
+        if (e.user.socketId === socket.id) {
+          console.log('oops you are getting kicked');
+          leaveRoom();
+        }
+      });
+
       socket.connect();
     }
     return () => {
       socket.off('connect');
       socket.off('disconnect');
       socket.off('chat');
+      socket.off('kick_user');
     };
   }, []);
 
@@ -98,6 +102,20 @@ function Chat() {
       socket.emit('chat', chatMessage);
     }
   };
+
+  const kickUser = (user: User) => {
+    if (!room) {
+      throw 'No room';
+    }
+    const kickUserData: KickUser = {
+      user,
+      roomName: room.name,
+    };
+    KickUserSchema.parse(kickUserData);
+    socket.emit('kick_user', kickUserData);
+    roomRefetch();
+  };
+
   return (
     <>
       {user?.userId && roomName && room && (
@@ -112,7 +130,11 @@ function Chat() {
             handleLeaveRoom={() => leaveRoom()}
           ></Header>
           {toggleUserList ? (
-            <UserList room={room}></UserList>
+            <UserList
+              room={room}
+              currentUser={{ socketId: socket.id, ...user }}
+              kickHandler={kickUser}
+            ></UserList>
           ) : (
             <Messages user={user} messages={messages}></Messages>
           )}

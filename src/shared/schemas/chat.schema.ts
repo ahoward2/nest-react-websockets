@@ -51,3 +51,8 @@ export const JoinRoomSchema = z.object({
   user: UserSchema,
   roomName: RoomNameSchema,
 });
+
+export const KickUserSchema = z.object({
+  user: UserSchema,
+  roomName: RoomNameSchema,
+});

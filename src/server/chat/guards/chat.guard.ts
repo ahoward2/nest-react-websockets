@@ -1,8 +1,8 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 import {
   Action,
@@ -51,7 +51,7 @@ export class ChatPoliciesGuard implements CanActivate {
     policyHandlers.every((handler) => {
       const check = this.execPolicyHandler(handler, ability);
       if (check === false) {
-        throw new UnauthorizedException();
+        throw new ForbiddenException();
       }
     });
     return true;

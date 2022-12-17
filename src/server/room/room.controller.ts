@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { Room } from '../entities/room.entity';
 import { RoomService } from './room.service';
 
@@ -13,8 +13,10 @@ export class RoomController {
 
   @Get('api/rooms/:room')
   async getRoom(@Param() params): Promise<Room> {
-    const rooms = await this.roomService.getRooms();
     const room = await this.roomService.getRoomByName(params.room);
-    return rooms[room];
+    if (room === 'Not Exists') {
+      throw new NotFoundException();
+    }
+    return room;
   }
 }

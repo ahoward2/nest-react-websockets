@@ -65,7 +65,6 @@ function Chat() {
 
       socket.on('kick_user', (e) => {
         if (e.user.socketId === socket.id) {
-          console.log('oops you are getting kicked');
           leaveRoom();
         }
       });

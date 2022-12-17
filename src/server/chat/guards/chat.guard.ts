@@ -13,6 +13,7 @@ import { RoomService } from '../../room/room.service';
 import { PolicyHandler } from '../../casl/interfaces/policy.interface';
 import { Socket } from 'socket.io';
 import { UserService } from '../../user/user.service';
+import { KickUser } from '../../../shared/interfaces/chat.interface';
 
 @Injectable()
 export class ChatPoliciesGuard implements CanActivate {
@@ -24,21 +25,20 @@ export class ChatPoliciesGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const policyHandlers: PolicyHandler[] = [];
-
     const ctx = context.switchToWs();
     const client = ctx.getClient<Socket>();
-    const data = ctx.getData();
-    const userFromRooms = await this.roomService.findFirstInstanceOfUser(
+    const data = ctx.getData<KickUser>();
+    const userFromRooms = await this.roomService.getFirstInstanceOfUser(
       client.id,
     );
     const user = await this.userService.findUserById(userFromRooms.userId);
     if (user === 'Not Exists') {
       throw 'User does not exist';
     }
-    const rooms = await this.roomService.getRooms();
-    const roomIndex = await this.roomService.getRoomByName(data.roomName);
-    const room = rooms[roomIndex];
-
+    const room = await this.roomService.getRoomByName(data.roomName);
+    if (room === 'Not Exists') {
+      throw 'Room does not exist';
+    }
     policyHandlers.push((ability) => ability.can(Action.Manage, room));
     const ability = this.caslAbilityFactory.createForUser(user);
     policyHandlers.every((handler) => {

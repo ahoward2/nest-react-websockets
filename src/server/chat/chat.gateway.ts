@@ -20,6 +20,7 @@ import { ZodValidationPipe } from '../pipes/zod.pipe';
 import {
   ChatMessageSchema,
   JoinRoomSchema,
+  KickUserSchema,
 } from '../../shared/schemas/chat.schema';
 import { UserService } from '../user/user.service';
 import { ChatPoliciesGuard } from './guards/chat.guard';
@@ -69,6 +70,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @UseGuards(ChatPoliciesGuard)
+  @UsePipes(new ZodValidationPipe(KickUserSchema))
   @SubscribeMessage('kick_user')
   async handleKickUserEvent(@MessageBody() payload: KickUser): Promise<void> {
     this.logger.log(
@@ -93,7 +95,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(socket: Socket): Promise<void> {
-    const user = await this.roomService.findFirstInstanceOfUser(socket.id);
+    const user = await this.roomService.getFirstInstanceOfUser(socket.id);
     if (user) {
       await this.userService.removeUserById(user.userId);
     }

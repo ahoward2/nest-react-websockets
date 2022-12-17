@@ -111,8 +111,11 @@ function Chat() {
       roomName: room.name,
     };
     KickUserSchema.parse(kickUserData);
-    socket.emit('kick_user', kickUserData);
-    roomRefetch();
+    socket.emit('kick_user', kickUserData, (complete) => {
+      if (complete) {
+        roomRefetch();
+      }
+    });
   };
 
   return (

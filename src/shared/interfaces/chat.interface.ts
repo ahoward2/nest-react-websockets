@@ -32,5 +32,8 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
   chat: (e: Message) => void;
   join_room: (e: JoinRoom) => void;
-  kick_user: (e: KickUser) => void;
+  kick_user: (
+    e: KickUser,
+    completionCallback: (complete: boolean) => void,
+  ) => void;
 }

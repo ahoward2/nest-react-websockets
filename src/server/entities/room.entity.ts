@@ -5,7 +5,7 @@ import {
 } from '../../shared/interfaces/chat.interface';
 
 export class Room implements RoomType {
-  constructor(attrs) {
+  constructor(attrs: RoomType) {
     Object.assign(this, attrs);
   }
   name: RoomName;

@@ -6,7 +6,7 @@ import {
 } from '../../shared/interfaces/chat.interface';
 
 export class User implements UserType {
-  constructor(attrs) {
+  constructor(attrs: UserType) {
     Object.assign(this, attrs);
   }
   userId: UserId;

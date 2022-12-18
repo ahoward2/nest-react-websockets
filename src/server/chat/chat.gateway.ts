@@ -65,7 +65,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       );
       await this.userService.addUser(payload.user);
       await this.server.in(payload.user.socketId).socketsJoin(payload.roomName);
-      await this.roomService.addUserToRoom(payload.roomName, payload.user);
+      await this.roomService.addUserToRoom(
+        payload.roomName,
+        payload.user.userId,
+      );
     }
   }
 

@@ -38,7 +38,7 @@ export class ChatPoliciesGuard implements CanActivate {
     const userFromRooms = await this.roomService.getFirstInstanceOfUser(
       client.id,
     );
-    const user = await this.userService.findUserById(userFromRooms.userId);
+    const user = await this.userService.getUserById(userFromRooms.userId);
     if (user === 'Not Exists') {
       throw 'User does not exist';
     }

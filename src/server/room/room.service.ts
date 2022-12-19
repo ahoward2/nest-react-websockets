@@ -35,7 +35,7 @@ export class RoomService {
   }
 
   async getRoomIndexByName(roomName: Room['name']): Promise<number> {
-    const roomIndex = this.rooms.findIndex((room) => room?.name === roomName);
+    const roomIndex = this.rooms.findIndex((room) => room.name === roomName);
     return roomIndex;
   }
 

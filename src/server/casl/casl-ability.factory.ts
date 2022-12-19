@@ -10,11 +10,8 @@ import { Room } from '../entities/room.entity';
 import { User } from '../entities/user.entity';
 
 export enum Action {
-  Manage = 'manage',
-  Create = 'create',
-  Read = 'read',
-  Update = 'update',
-  Delete = 'delete',
+  Kick = 'kick',
+  Join = 'join',
 }
 
 type Subjects = InferSubjects<typeof Room | typeof User> | 'all';
@@ -28,13 +25,13 @@ export class CaslAbilityFactory {
   createForUser(user: User) {
     const { can, build } = new AbilityBuilder<AppAbility>(createMongoAbility);
 
-    // All users can read all rooms
-    can(Action.Read, Room);
-
-    // Host can manage room
-    can<FlatRoom>(Action.Manage, Room, {
+    // Host can kick users from room
+    can<FlatRoom>(Action.Kick, Room, {
       'host.userId': user.userId,
     });
+
+    // Any user can join any room
+    can(Action.Join, Room);
 
     return build({
       detectSubjectType: (object) =>

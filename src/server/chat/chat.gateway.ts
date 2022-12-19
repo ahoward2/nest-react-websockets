@@ -72,7 +72,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  @UseGuards(ChatPoliciesGuard)
+  @UseGuards(ChatPoliciesGuard<KickUser>)
   @UsePipes(new ZodValidationPipe(KickUserSchema))
   @SubscribeMessage('kick_user')
   async handleKickUserEvent(

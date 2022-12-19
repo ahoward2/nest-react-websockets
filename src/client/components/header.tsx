@@ -1,5 +1,5 @@
 import React from 'react';
-import { User } from '../../shared/interfaces/chat.interface';
+import { Room, User } from '../../shared/interfaces/chat.interface';
 
 export const Header = ({
   isConnected,
@@ -12,7 +12,7 @@ export const Header = ({
   users: User[];
   handleUsersClick: () => void;
   handleLeaveRoom: () => void;
-  roomName: string;
+  roomName: Room['name'];
 }) => {
   return (
     <header className="flex h-1/6 flex-col pt-12">

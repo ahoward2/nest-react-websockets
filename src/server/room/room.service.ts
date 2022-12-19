@@ -15,7 +15,7 @@ export class RoomService {
     }
     const room = await this.getRoomIndexByName(roomName);
     if (room === -1) {
-      await this.rooms.push(
+      this.rooms.push(
         new Room({ name: roomName, host: hostUser, users: [hostUser] }),
       );
     }
@@ -26,7 +26,7 @@ export class RoomService {
     if (roomIndex === -1) {
       throw 'The room which you are attempting to remove does not exist';
     }
-    this.rooms.splice(roomIndex, roomIndex);
+    this.rooms.splice(roomIndex, 1);
   }
 
   async getRoomHost(hostName: Room['host']['userName']): Promise<User> {
@@ -102,13 +102,31 @@ export class RoomService {
     socketId: User['socketId'],
     roomName: Room['name'],
   ): Promise<void> {
-    const room = await this.getRoomIndexByName(roomName);
-    this.rooms[room].users = this.rooms[room].users.filter(
-      (user) => user.socketId !== socketId,
+    const roomIndex = await this.getRoomIndexByName(roomName);
+    if (roomIndex === -1) {
+      throw 'The room which you attempted to remove a user from does not exist';
+    }
+    const userIndex = await this.getUserIndexFromRoomBySocketId(
+      socketId,
+      roomIndex,
     );
-    if (this.rooms[room].users.length === 0) {
+    if (userIndex === -1) {
+      throw 'The user which you attempted to remove from a room does not exist in that room';
+    }
+    this.rooms[roomIndex].users.splice(userIndex, 1);
+    if (this.rooms[roomIndex].users.length === 0) {
       await this.removeRoom(roomName);
     }
+  }
+
+  async getUserIndexFromRoomBySocketId(
+    socketId: User['socketId'],
+    roomIndex: number,
+  ): Promise<number> {
+    const userIndex = this.rooms[roomIndex].users.findIndex(
+      (user) => user.socketId === socketId,
+    );
+    return userIndex;
   }
 
   async getRooms(): Promise<Room[]> {

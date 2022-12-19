@@ -1,10 +1,11 @@
 import React, { useRef } from 'react';
+import { Message } from '../../shared/interfaces/chat.interface';
 import { MessageSchema } from '../../shared/schemas/chat.schema';
 
 export const MessageForm = ({
   sendMessage,
 }: {
-  sendMessage: (message: string) => void;
+  sendMessage: (message: Message['message']) => void;
 }) => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 

@@ -3,7 +3,7 @@ import { Message, User } from '../../shared/interfaces/chat.interface';
 
 const determineMessageStyle = (
   user: Pick<User, 'userId' | 'userName'>,
-  messageUserId: string,
+  messageUserId: Message['user']['userId'],
 ) => {
   if (user && messageUserId === user.userId) {
     return {

@@ -33,6 +33,6 @@ export class UserService {
     if (findUserIndex == -1) {
       throw 'User does not exist so cannot be removed from the store';
     }
-    this.users.splice(findUserIndex, findUserIndex);
+    this.users.splice(findUserIndex, 1);
   }
 }

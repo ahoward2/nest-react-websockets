@@ -8,6 +8,7 @@ import {
   RoomNameSchemaRegex,
 } from '../../shared/schemas/chat.schema';
 import { generateUserId, setUser } from '../lib/user';
+import { User } from '../../shared/interfaces/chat.interface';
 
 const formSchema = z.object({
   userName: UserNameSchema,
@@ -25,7 +26,7 @@ export const LoginForm = ({
 }: {
   onSubmitSecondary: (data: LoginFormInputs) => void;
   disableNewRoom: boolean;
-  defaultUser?: string;
+  defaultUser?: User['userName'];
 }) => {
   const {
     register,
@@ -38,8 +39,8 @@ export const LoginForm = ({
 
   const onSubmit = (data: LoginFormInputs) => {
     const newUser = {
-      id: generateUserId(data.userName),
-      name: data.userName,
+      userId: generateUserId(data.userName),
+      userName: data.userName,
     };
     setUser(newUser);
     onSubmitSecondary(data);

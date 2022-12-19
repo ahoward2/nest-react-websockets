@@ -9,11 +9,11 @@ export const Rooms = ({
   isLoading,
 }: {
   rooms: Room[];
-  selectionHandler: (roomName: string) => void;
-  selectedRoom?: string;
+  selectionHandler: (roomName: Room['name']) => void;
+  selectedRoom?: Room['name'];
   isLoading: boolean;
 }) => {
-  const [isDelay, setIsDelay] = useState(true);
+  const [isDelay, setIsDelay] = useState<boolean>(true);
   useEffect(() => {
     const delayTimer = setTimeout(() => {
       setIsDelay(false);

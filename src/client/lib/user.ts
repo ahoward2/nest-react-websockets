@@ -1,6 +1,11 @@
-export const setUser = ({ id, name }: { id: string; name: string }) => {
-  sessionStorage.setItem('userId', id);
-  sessionStorage.setItem('userName', name);
+import { User } from '../../shared/interfaces/chat.interface';
+
+export const setUser = ({
+  userId,
+  userName,
+}: Pick<User, 'userId' | 'userName'>) => {
+  sessionStorage.setItem('userId', userId);
+  sessionStorage.setItem('userName', userName);
 };
 
 export const unsetUser = () => {
@@ -17,6 +22,6 @@ export const getUser = () => {
   };
 };
 
-export const generateUserId = (userName: string) => {
+export const generateUserId = (userName: User['userName']) => {
   return Date.now().toLocaleString().concat(userName);
 };

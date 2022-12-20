@@ -12,6 +12,7 @@ import { User } from '../entities/user.entity';
 export enum Action {
   Kick = 'kick',
   Join = 'join',
+  Message = 'message',
 }
 
 type Subjects = InferSubjects<typeof Room | typeof User> | 'all';
@@ -32,6 +33,11 @@ export class CaslAbilityFactory {
 
     // Any user can join any room
     can(Action.Join, Room);
+
+    // User can send messages in room given they are in the roo
+    can(Action.Message, Room, {
+      users: { $elemMatch: { userId: user.userId } },
+    });
 
     return build({
       detectSubjectType: (object) =>

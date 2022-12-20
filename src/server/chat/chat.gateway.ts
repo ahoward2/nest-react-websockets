@@ -43,6 +43,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private logger = new Logger('ChatGateway');
 
+  @UseGuards(ChatPoliciesGuard<Message>)
   @UsePipes(new ZodValidationPipe(ChatMessageSchema))
   @SubscribeMessage('chat')
   async handleChatEvent(

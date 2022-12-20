@@ -37,11 +37,11 @@ export class ChatPoliciesGuard<
     const ctx = context.switchToWs();
     const data = ctx.getData<CtxData>();
     const user = data.user;
+    const room = await this.roomService.getRoomByName(data.roomName);
 
-    if (data.eventName === 'kick_room') {
-      const room = await this.roomService.getRoomByName(data.roomName);
+    if (data.eventName === 'kick_user') {
       if (room === 'Not Exists') {
-        throw 'Room does not exist';
+        throw `Room must exist to evaluate ${data.eventName} policy`;
       }
       policyHandlers.push((ability) => ability.can(Action.Kick, room));
     }
@@ -49,6 +49,14 @@ export class ChatPoliciesGuard<
     if (data.eventName === 'join_room') {
       policyHandlers.push((ability) => ability.can(Action.Join, Room));
     }
+
+    if (data.eventName === 'chat') {
+      if (room === 'Not Exists') {
+        throw `Room must exist to evaluate ${data.eventName} policy`;
+      }
+      policyHandlers.push((ability) => ability.can(Action.Message, room));
+    }
+
     const ability = this.caslAbilityFactory.createForUser(user);
     policyHandlers.every((handler) => {
       const check = this.execPolicyHandler(handler, ability);

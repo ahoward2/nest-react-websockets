@@ -12,7 +12,7 @@ import {
 import { RoomService } from '../../room/room.service';
 import { PolicyHandler } from '../../casl/interfaces/policy.interface';
 import {
-  EventName,
+  ClientToServerEvents,
   Room as RoomType,
   User,
 } from '../../../shared/interfaces/chat.interface';
@@ -23,7 +23,7 @@ export class ChatPoliciesGuard<
   CtxData extends {
     user: User;
     roomName: RoomType['name'];
-    eventName: EventName;
+    eventName: keyof ClientToServerEvents;
   },
 > implements CanActivate
 {

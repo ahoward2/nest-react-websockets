@@ -24,7 +24,7 @@ export const RoomNameSchema = z
     message: 'Must not contain spaces or special characters.',
   });
 
-export const EventNameSchema = z.string();
+export const EventNameSchema = z.enum(['chat', 'kick_user', 'join_room']);
 
 export const SocketIdSchema = z
   .string()
@@ -61,4 +61,18 @@ export const KickUserSchema = z.object({
   userToKick: UserSchema,
   roomName: RoomNameSchema,
   eventName: EventNameSchema,
+});
+
+export const ClientToServerEventsSchema = z.object({
+  chat: z.function().args(ChatMessageSchema).returns(z.void()),
+  join_room: z.function().args(JoinRoomSchema).returns(z.void()),
+  kick_user: z
+    .function()
+    .args(KickUserSchema, z.function().args(z.boolean()).returns(z.void()))
+    .returns(z.void()),
+});
+
+export const ServerToClientEventsSchema = z.object({
+  chat: z.function().args(ChatMessageSchema).returns(z.void()),
+  kick_user: z.function().args(KickUserSchema).returns(z.void()),
 });

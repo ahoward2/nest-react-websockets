@@ -7,6 +7,7 @@ import {
   ServerToClientEvents,
   ClientToServerEvents,
   KickUser,
+  JoinRoom,
 } from '../../shared/interfaces/chat.interface';
 import { Header } from '../components/header';
 import { UserList } from '../components/list';
@@ -46,7 +47,7 @@ function Chat() {
       navigate({ to: '/', replace: true });
     } else {
       socket.on('connect', () => {
-        const joinRoom = {
+        const joinRoom: JoinRoom = {
           roomName,
           user: { socketId: socket.id, ...user },
           eventName: 'join_room',
@@ -88,7 +89,7 @@ function Chat() {
 
   const sendMessage = (message: string) => {
     if (user && socket && roomName) {
-      const chatMessage = {
+      const chatMessage: Message = {
         user: {
           userId: user.userId,
           userName: user.userName,

@@ -11,44 +11,44 @@ import {
 } from '../../casl/casl-ability.factory';
 import { RoomService } from '../../room/room.service';
 import { PolicyHandler } from '../../casl/interfaces/policy.interface';
-import { Socket } from 'socket.io';
-import { UserService } from '../../user/user.service';
-import { Room } from '../../../shared/interfaces/chat.interface';
-import { KickUserSchema } from '../../../shared/schemas/chat.schema';
+import {
+  EventName,
+  Room as RoomType,
+  User,
+} from '../../../shared/interfaces/chat.interface';
+import { Room } from '../../entities/room.entity';
 
 @Injectable()
-export class ChatPoliciesGuard<CtxData extends { roomName: Room['name'] }>
-  implements CanActivate
+export class ChatPoliciesGuard<
+  CtxData extends {
+    user: User;
+    roomName: RoomType['name'];
+    eventName: EventName;
+  },
+> implements CanActivate
 {
   constructor(
     private caslAbilityFactory: CaslAbilityFactory,
     private roomService: RoomService,
-    private userService: UserService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const policyHandlers: PolicyHandler[] = [];
     const ctx = context.switchToWs();
-    const client = ctx.getClient<Socket>();
     const data = ctx.getData<CtxData>();
-    // Since we're extracting data from context, we should validate it's
-    // expected form. We do this with pipes which execute after the guard,
-    // but given our guard has specific room targets, we need to interact
-    // with our services so we should make sure data is correct before
-    // doing so.
-    KickUserSchema.parse(data);
-    const userFromRooms = await this.roomService.getFirstInstanceOfUser(
-      client.id,
-    );
-    const user = await this.userService.getUserById(userFromRooms.userId);
-    if (user === 'Not Exists') {
-      throw 'User does not exist';
+    const user = data.user;
+
+    if (data.eventName === 'kick_room') {
+      const room = await this.roomService.getRoomByName(data.roomName);
+      if (room === 'Not Exists') {
+        throw 'Room does not exist';
+      }
+      policyHandlers.push((ability) => ability.can(Action.Kick, room));
     }
-    const room = await this.roomService.getRoomByName(data.roomName);
-    if (room === 'Not Exists') {
-      throw 'Room does not exist';
+
+    if (data.eventName === 'join_room') {
+      policyHandlers.push((ability) => ability.can(Action.Join, Room));
     }
-    policyHandlers.push((ability) => ability.can(Action.Kick, room));
     const ability = this.caslAbilityFactory.createForUser(user);
     policyHandlers.every((handler) => {
       const check = this.execPolicyHandler(handler, ability);

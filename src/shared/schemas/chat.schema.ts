@@ -24,6 +24,8 @@ export const RoomNameSchema = z
     message: 'Must not contain spaces or special characters.',
   });
 
+export const EventNameSchema = z.string();
+
 export const SocketIdSchema = z
   .string()
   .length(20, { message: 'Must be 20 characters.' });
@@ -39,6 +41,7 @@ export const ChatMessageSchema = z.object({
   timeSent: TimeSentSchema,
   message: MessageSchema,
   roomName: RoomNameSchema,
+  eventName: EventNameSchema,
 });
 
 export const RoomSchema = z.object({
@@ -50,9 +53,12 @@ export const RoomSchema = z.object({
 export const JoinRoomSchema = z.object({
   user: UserSchema,
   roomName: RoomNameSchema,
+  eventName: EventNameSchema,
 });
 
 export const KickUserSchema = z.object({
   user: UserSchema,
+  userToKick: UserSchema,
   roomName: RoomNameSchema,
+  eventName: EventNameSchema,
 });

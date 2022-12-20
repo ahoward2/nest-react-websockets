@@ -53,6 +53,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(payload.roomName).emit('chat', payload); // broadcast messages
   }
 
+  @UseGuards(ChatPoliciesGuard<JoinRoom>)
   @UsePipes(new ZodValidationPipe(JoinRoomSchema))
   @SubscribeMessage('join_room')
   async handleSetClientDataEvent(
@@ -79,10 +80,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() payload: KickUser,
   ): Promise<boolean> {
     this.logger.log(
-      `${payload.user.userName} is getting kicked from ${payload.roomName}`,
+      `${payload.userToKick.userName} is getting kicked from ${payload.roomName}`,
     );
     await this.server.to(payload.roomName).emit('kick_user', payload);
-    await this.server.in(payload.user.socketId).socketsLeave(payload.roomName);
+    await this.server
+      .in(payload.userToKick.socketId)
+      .socketsLeave(payload.roomName);
     await this.server.to(payload.roomName).emit('chat', {
       user: {
         userId: 'serverId',
@@ -90,7 +93,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         socketId: 'ServerSocketId',
       },
       timeSent: new Date(Date.now()).toLocaleString('en-US'),
-      message: `${payload.user.userName} was kicked.`,
+      message: `${payload.userToKick.userName} was kicked.`,
       roomName: payload.roomName,
     });
     return true;

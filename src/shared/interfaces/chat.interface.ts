@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   ChatMessageSchema,
+  EventNameSchema,
   JoinRoomSchema,
   KickUserSchema,
   RoomNameSchema,
@@ -18,7 +19,7 @@ export type User = z.infer<typeof UserSchema>;
 
 export type RoomName = z.infer<typeof RoomNameSchema>;
 export type Room = z.infer<typeof RoomSchema>;
-
+export type EventName = z.infer<typeof EventNameSchema>;
 export type Message = z.infer<typeof ChatMessageSchema>;
 
 export type JoinRoom = z.infer<typeof JoinRoomSchema>;

@@ -49,6 +49,7 @@ function Chat() {
         const joinRoom = {
           roomName,
           user: { socketId: socket.id, ...user },
+          eventName: 'join_room',
         };
         JoinRoomSchema.parse(joinRoom);
         socket.emit('join_room', joinRoom);
@@ -64,7 +65,7 @@ function Chat() {
       });
 
       socket.on('kick_user', (e) => {
-        if (e.user.socketId === socket.id) {
+        if (e.userToKick.socketId === socket.id) {
           leaveRoom();
         }
       });
@@ -96,19 +97,25 @@ function Chat() {
         timeSent: new Date(Date.now()).toLocaleString('en-US'),
         message,
         roomName: roomName,
+        eventName: 'chat',
       };
       ChatMessageSchema.parse(chatMessage);
       socket.emit('chat', chatMessage);
     }
   };
 
-  const kickUser = (user: User) => {
+  const kickUser = (userToKick: User) => {
     if (!room) {
       throw 'No room';
     }
+    if (!user) {
+      throw 'No current user';
+    }
     const kickUserData: KickUser = {
-      user,
+      user: { ...user, socketId: socket.id },
+      userToKick: userToKick,
       roomName: room.name,
+      eventName: 'kick_user',
     };
     KickUserSchema.parse(kickUserData);
     socket.emit('kick_user', kickUserData, (complete) => {

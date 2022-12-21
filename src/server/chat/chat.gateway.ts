@@ -51,7 +51,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     payload: Message,
   ): Promise<void> {
     this.logger.log(payload);
-    this.server.to(payload.roomName).emit('chat', payload); // broadcast messages
+    this.server.to(payload.roomName).emit('chat', payload);
   }
 
   @UseGuards(ChatPoliciesGuard<JoinRoom>)

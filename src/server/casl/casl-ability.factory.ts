@@ -34,7 +34,7 @@ export class CaslAbilityFactory {
     // Any user can join any room
     can(Action.Join, Room);
 
-    // User can send messages in room given they are in the roo
+    // User can send messages in room given they are in the room
     can(Action.Message, Room, {
       users: { $elemMatch: { userId: user.userId } },
     });

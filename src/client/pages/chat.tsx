@@ -21,6 +21,8 @@ import {
   JoinRoomSchema,
   KickUserSchema,
 } from '../../shared/schemas/chat.schema';
+import { LoadingLayout } from '../layouts/loading.layout';
+import { Loading } from '../components/loading';
 
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
   autoConnect: false,
@@ -33,6 +35,7 @@ function Chat() {
 
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [isJoinedRoom, setIsJoinedRoom] = useState(false);
+  const [isJoiningDelay, setIsJoiningDelay] = useState(false);
   const [messages, setMessages] = useState<ClientMessage[]>([]);
   const [toggleUserList, setToggleUserList] = useState<boolean>(false);
 
@@ -48,6 +51,7 @@ function Chat() {
       navigate({ to: '/', replace: true });
     } else {
       socket.on('connect', () => {
+        setIsJoiningDelay(true);
         const joinRoom: JoinRoom = {
           roomName,
           user: { socketId: socket.id, ...user },
@@ -55,9 +59,13 @@ function Chat() {
         };
         JoinRoomSchema.parse(joinRoom);
         const joinTimeout = setTimeout(() => {
-          // if server doesn't acknowledge joined room in 10 seconds, redirect to login
+          // if server doesn't acknowledge joined room in 30 seconds, redirect to login
           leaveRoom();
-        }, 10000);
+        }, 30000);
+        setTimeout(() => {
+          // default required 1.5 second minimum join delay to prevent flickering
+          setIsJoiningDelay(false);
+        }, 1500);
         socket.emit('join_room', joinRoom, (joined) => {
           if (joined) {
             clearTimeout(joinTimeout);
@@ -165,7 +173,7 @@ function Chat() {
 
   return (
     <>
-      {user?.userId && roomName && room && isJoinedRoom && (
+      {user?.userId && roomName && room && isJoinedRoom && !isJoiningDelay ? (
         <ChatLayout>
           <Header
             isConnected={isConnected}
@@ -187,6 +195,10 @@ function Chat() {
           )}
           <MessageForm sendMessage={sendMessage}></MessageForm>
         </ChatLayout>
+      ) : (
+        <LoadingLayout>
+          <Loading message={`Joining ${room?.name}`}></Loading>
+        </LoadingLayout>
       )}
     </>
   );

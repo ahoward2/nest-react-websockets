@@ -12,7 +12,7 @@ export const MessageSchema = z
   .min(1, { message: 'Must be at least 1 character.' })
   .max(1000, { message: 'Must be at most 1000 characters.' });
 
-export const TimeSentSchema = z.string();
+export const TimeSentSchema = z.number();
 
 export const RoomNameSchemaRegex = new RegExp('^\\S+\\w$');
 
@@ -63,16 +63,38 @@ export const KickUserSchema = z.object({
   eventName: EventNameSchema,
 });
 
+export const KickUserEventAckSchema = z
+  .function()
+  .args(z.boolean())
+  .returns(z.void());
+
+export const KickUserEventSchema = z
+  .function()
+  .args(KickUserSchema, KickUserEventAckSchema)
+  .returns(z.void());
+
+export const ChatEventAckSchema = z
+  .function()
+  .args(z.boolean())
+  .returns(z.void());
+
+export const ChatEventSchema = z
+  .function()
+  .args(ChatMessageSchema, ChatEventAckSchema)
+  .returns(z.void());
+
+export const JoinRoomEventSchema = z
+  .function()
+  .args(JoinRoomSchema)
+  .returns(z.void());
+
 export const ClientToServerEventsSchema = z.object({
-  chat: z.function().args(ChatMessageSchema).returns(z.void()),
-  join_room: z.function().args(JoinRoomSchema).returns(z.void()),
-  kick_user: z
-    .function()
-    .args(KickUserSchema, z.function().args(z.boolean()).returns(z.void()))
-    .returns(z.void()),
+  chat: ChatEventSchema,
+  join_room: JoinRoomEventSchema,
+  kick_user: KickUserEventSchema,
 });
 
 export const ServerToClientEventsSchema = z.object({
-  chat: z.function().args(ChatMessageSchema).returns(z.void()),
-  kick_user: z.function().args(KickUserSchema).returns(z.void()),
+  chat: ChatEventSchema,
+  kick_user: KickUserEventSchema,
 });

@@ -12,7 +12,7 @@ import {
 import { Header } from '../components/header';
 import { UserList } from '../components/list';
 import { MessageForm } from '../components/message.form';
-import { Messages } from '../components/messages';
+import { Messages, ClientMessage } from '../components/messages';
 import { ChatLayout } from '../layouts/chat.layout';
 import { unsetRoom, useRoomQuery } from '../lib/room';
 import { getUser } from '../lib/user';
@@ -32,7 +32,7 @@ function Chat() {
   } = useMatch<ChatLocationGenerics>();
 
   const [isConnected, setIsConnected] = useState(socket.connected);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ClientMessage[]>([]);
   const [toggleUserList, setToggleUserList] = useState<boolean>(false);
 
   const { data: room, refetch: roomRefetch } = useRoomQuery(
@@ -62,7 +62,9 @@ function Chat() {
       });
 
       socket.on('chat', (e) => {
-        setMessages((messages) => [e, ...messages]);
+        if (e.user.userId !== user.userId) {
+          setMessages((messages) => [{ ...e, delivered: true }, ...messages]);
+        }
       });
 
       socket.on('kick_user', (e) => {
@@ -95,13 +97,38 @@ function Chat() {
           userName: user.userName,
           socketId: socket.id,
         },
-        timeSent: new Date(Date.now()).toLocaleString('en-US'),
+        timeSent: Date.now(),
         message,
         roomName: roomName,
         eventName: 'chat',
       };
       ChatMessageSchema.parse(chatMessage);
-      socket.emit('chat', chatMessage);
+      setMessages((messages) => [
+        { ...chatMessage, delivered: false },
+        ...messages,
+      ]);
+      socket.emit('chat', chatMessage, (delivered) => {
+        if (delivered) {
+          setMessages((messages) => {
+            const previousMessageIndex = messages.findIndex((mes) => {
+              if (
+                mes.user.userId === user.userId &&
+                mes.timeSent === chatMessage.timeSent
+              ) {
+                return mes;
+              }
+            });
+            if (previousMessageIndex === -1) {
+              throw 'Previously sent message not found to update delivered status';
+            }
+            messages[previousMessageIndex] = {
+              ...messages[previousMessageIndex],
+              delivered: true,
+            };
+            return [...messages];
+          });
+        }
+      });
     }
   };
 

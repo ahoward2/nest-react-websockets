@@ -48,9 +48,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleChatEvent(
     @MessageBody()
     payload: Message,
-  ): Promise<void> {
+  ): Promise<boolean> {
     this.logger.log(payload);
     this.server.to(payload.roomName).emit('chat', payload);
+    return true;
   }
 
   @UseGuards(ChatPoliciesGuard<JoinRoom>)

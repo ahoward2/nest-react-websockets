@@ -83,9 +83,14 @@ export const ChatEventSchema = z
   .args(ChatMessageSchema, ChatEventAckSchema)
   .returns(z.void());
 
+export const JoinRoomEventAckSchema = z
+  .function()
+  .args(z.boolean())
+  .returns(z.void());
+
 export const JoinRoomEventSchema = z
   .function()
-  .args(JoinRoomSchema)
+  .args(JoinRoomSchema, JoinRoomEventAckSchema)
   .returns(z.void());
 
 export const ClientToServerEventsSchema = z.object({

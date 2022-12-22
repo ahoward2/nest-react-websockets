@@ -32,6 +32,7 @@ function Chat() {
   } = useMatch<ChatLocationGenerics>();
 
   const [isConnected, setIsConnected] = useState(socket.connected);
+  const [isJoinedRoom, setIsJoinedRoom] = useState(false);
   const [messages, setMessages] = useState<ClientMessage[]>([]);
   const [toggleUserList, setToggleUserList] = useState<boolean>(false);
 
@@ -53,7 +54,16 @@ function Chat() {
           eventName: 'join_room',
         };
         JoinRoomSchema.parse(joinRoom);
-        socket.emit('join_room', joinRoom);
+        const joinTimeout = setTimeout(() => {
+          // if server doesn't acknowledge joined room in 10 seconds, redirect to login
+          leaveRoom();
+        }, 10000);
+        socket.emit('join_room', joinRoom, (joined) => {
+          if (joined) {
+            clearTimeout(joinTimeout);
+            setIsJoinedRoom(true);
+          }
+        });
         setIsConnected(true);
       });
 
@@ -155,7 +165,7 @@ function Chat() {
 
   return (
     <>
-      {user?.userId && roomName && room && (
+      {user?.userId && roomName && room && isJoinedRoom && (
         <ChatLayout>
           <Header
             isConnected={isConnected}

@@ -63,11 +63,11 @@ function Chat() {
           leaveRoom();
         }, 30000);
         setTimeout(() => {
-          // default required 1.5 second minimum join delay to prevent flickering
+          // default required 800 ms minimum join delay to prevent flickering
           setIsJoiningDelay(false);
-        }, 1500);
-        socket.emit('join_room', joinRoom, (joined) => {
-          if (joined) {
+        }, 800);
+        socket.emit('join_room', joinRoom, (response) => {
+          if (response) {
             clearTimeout(joinTimeout);
             setIsJoinedRoom(true);
           }
@@ -125,8 +125,8 @@ function Chat() {
         { ...chatMessage, delivered: false },
         ...messages,
       ]);
-      socket.emit('chat', chatMessage, (delivered) => {
-        if (delivered) {
+      socket.emit('chat', chatMessage, (response) => {
+        if (response) {
           setMessages((messages) => {
             const previousMessageIndex = messages.findIndex((mes) => {
               if (
@@ -164,8 +164,8 @@ function Chat() {
       eventName: 'kick_user',
     };
     KickUserSchema.parse(kickUserData);
-    socket.emit('kick_user', kickUserData, (complete) => {
-      if (complete) {
+    socket.emit('kick_user', kickUserData, (response) => {
+      if (response) {
         roomRefetch();
       }
     });
@@ -197,7 +197,7 @@ function Chat() {
         </ChatLayout>
       ) : (
         <LoadingLayout>
-          <Loading message={`Joining ${room?.name}`}></Loading>
+          <Loading message={`Joining ${roomName}`}></Loading>
         </LoadingLayout>
       )}
     </>

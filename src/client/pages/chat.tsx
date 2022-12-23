@@ -58,17 +58,15 @@ function Chat() {
           eventName: 'join_room',
         };
         JoinRoomSchema.parse(joinRoom);
-        const joinTimeout = setTimeout(() => {
-          // if server doesn't acknowledge joined room in 30 seconds, redirect to login
-          leaveRoom();
-        }, 30000);
         setTimeout(() => {
           // default required 800 ms minimum join delay to prevent flickering
           setIsJoiningDelay(false);
         }, 800);
-        socket.emit('join_room', joinRoom, (response) => {
+        socket.timeout(30000).emit('join_room', joinRoom, (err, response) => {
+          if (err) {
+            leaveRoom();
+          }
           if (response) {
-            clearTimeout(joinTimeout);
             setIsJoinedRoom(true);
           }
         });

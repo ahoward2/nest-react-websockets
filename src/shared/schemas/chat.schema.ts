@@ -85,7 +85,7 @@ export const ChatEventSchema = z
 
 export const JoinRoomEventAckSchema = z
   .function()
-  .args(z.boolean())
+  .args(z.string(), z.boolean())
   .returns(z.void());
 
 export const JoinRoomEventSchema = z

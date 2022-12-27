@@ -24,12 +24,10 @@ import {
 } from '../../shared/schemas/chat.schema';
 import { UserService } from '../user/user.service';
 import { ChatPoliciesGuard } from './guards/chat.guard';
+import { WsThrottlerGuard } from './guards/throttler.guard';
+import { Throttle } from '@nestjs/throttler';
 
-@WebSocketGateway({
-  cors: {
-    origin: '*',
-  },
-})
+@WebSocketGateway({})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private roomService: RoomService,
@@ -43,35 +41,31 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private logger = new Logger('ChatGateway');
 
-  @UseGuards(ChatPoliciesGuard<Message>)
+  @Throttle(10, 30)
+  @UseGuards(ChatPoliciesGuard<Message>, WsThrottlerGuard)
   @UsePipes(new ZodValidationPipe(ChatMessageSchema))
   @SubscribeMessage('chat')
   async handleChatEvent(
     @MessageBody()
     payload: Message,
-  ): Promise<void> {
+  ): Promise<boolean> {
     this.logger.log(payload);
     this.server.to(payload.roomName).emit('chat', payload);
+    return true;
   }
 
-  @UseGuards(ChatPoliciesGuard<JoinRoom>)
+  @UseGuards(ChatPoliciesGuard<JoinRoom>, WsThrottlerGuard)
   @UsePipes(new ZodValidationPipe(JoinRoomSchema))
   @SubscribeMessage('join_room')
   async handleSetClientDataEvent(
     @MessageBody()
     payload: JoinRoom,
-  ): Promise<void> {
-    if (payload.user.socketId) {
-      this.logger.log(
-        `${payload.user.socketId} is joining ${payload.roomName}`,
-      );
-      await this.userService.addUser(payload.user);
-      await this.server.in(payload.user.socketId).socketsJoin(payload.roomName);
-      await this.roomService.addUserToRoom(
-        payload.roomName,
-        payload.user.userId,
-      );
-    }
+  ): Promise<boolean> {
+    this.logger.log(`${payload.user.socketId} is joining ${payload.roomName}`);
+    await this.userService.addUser(payload.user);
+    await this.server.in(payload.user.socketId).socketsJoin(payload.roomName);
+    await this.roomService.addUserToRoom(payload.roomName, payload.user.userId);
+    return true;
   }
 
   @UseGuards(ChatPoliciesGuard<KickUser>)
@@ -106,7 +100,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleDisconnect(socket: Socket): Promise<void> {
     const user = await this.roomService.getFirstInstanceOfUser(socket.id);
-    if (user) {
+    if (user !== 'Not Exists') {
       await this.userService.removeUserById(user.userId);
     }
     await this.roomService.removeUserFromAllRooms(socket.id);

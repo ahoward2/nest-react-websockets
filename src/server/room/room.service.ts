@@ -77,10 +77,12 @@ export class RoomService {
     return filteredRooms;
   }
 
-  async getFirstInstanceOfUser(socketId: User['socketId']): Promise<User> {
+  async getFirstInstanceOfUser(
+    socketId: User['socketId'],
+  ): Promise<User | 'Not Exists'> {
     const findRoomsWithUser = await this.getRoomsByUserSocketId(socketId);
     if (findRoomsWithUser.length === 0) {
-      throw 'Cound not find any rooms that contain that user';
+      return 'Not Exists';
     }
     const findUserInRoom = findRoomsWithUser[0].users.find(
       (user) => user.socketId === socketId,
